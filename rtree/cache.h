@@ -5,18 +5,18 @@ class Cache
 {
 public:
    enum uses {free,used,fixed};
-   int ptr;		       
-   int cachesize;		
+   int ptr;               
+   int cachesize;        
    int blocklength;
    int page_faults;
-   int *cache_cont;	    
+   int *cache_cont;        
    Cacheable **cache_tree;  
-   uses *fuf_cont; 		
+   uses *fuf_cont;         
    int  *LRU_indicator; 
    bool *dirty_indicator; 
-   char **cache;   		
+   char **cache;           
    
-   int next();		
+   int next();        
    int in_cache(int index, Cacheable *rt);
    Cache(int csize, int blength);
    ~Cache();
@@ -26,7 +26,7 @@ public:
    bool unfix_block(int i, Cacheable *rt);
    void unfix_all();
    void set_cachesize(int s);
-   void flush();			
+   void flush();            
 };
 
 #endif // __CACHE

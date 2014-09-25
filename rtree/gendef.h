@@ -39,38 +39,38 @@ class Cacheable   //inherit this class if you wish to design an external
                   //memory structure that can be cached
 {
 public:
-	BlockFile *file;
-	Cache *cache;
+    BlockFile *file;
+    Cache *cache;
 };
  
 class CmdIntrpr{  //this is the class of command interpretor.  for a new rtree decescendent
                   //inherit this class to obtain tailored command interpretor
 public:
-	int cnfrm_cmd(char *_msg){
-		char c = ' ';
-		while (c != 'N' && c != 'Y'){
-			printf("%s (y/n)?", _msg);
-			c = getchar(); 
-			char tmp;
-			while ((tmp = getchar()) != '\n');
-			c = toupper(c); 
-		}
-		if (c == 'N') return 0; else return 1; 
-	}
+    int cnfrm_cmd(char *_msg){
+        char c = ' ';
+        while (c != 'N' && c != 'Y'){
+            printf("%s (y/n)?", _msg);
+            c = getchar(); 
+            char tmp;
+            while ((tmp = getchar()) != '\n');
+            c = toupper(c); 
+        }
+        if (c == 'N') return 0; else return 1; 
+    }
   
-	void get_cmd(char *_msg, char *_cmd){
-		printf("%s", _msg);  
-		char *c = _cmd;
-		while (((*c) = getchar()) != '\n')
-			c++;
-		*c = '\0'; 
-	} 
+    void get_cmd(char *_msg, char *_cmd){
+        printf("%s", _msg);  
+        char *c = _cmd;
+        while (((*c) = getchar()) != '\n')
+            c++;
+        *c = '\0'; 
+    } 
 
-	virtual bool build_tree(char *_tree_fname, char *_data_fname, int _b_len, int _dim, int _csize) = 0;
-	virtual void free_tree() = 0;
-	virtual int qry_sngle(float *_mbr, int *_io_count) = 0;
-	virtual void run() = 0;
-	virtual void version() = 0;
+    virtual bool build_tree(char *_tree_fname, char *_data_fname, int _b_len, int _dim, int _csize) = 0;
+    virtual void free_tree() = 0;
+    virtual int qry_sngle(float *_mbr, int *_io_count) = 0;
+    virtual void run() = 0;
+    virtual void version() = 0;
 };
   
 enum SECTION {OVERLAP, INSIDE, S_NONE};
@@ -86,9 +86,9 @@ struct SortMbr{
 };
 
 struct SortTuple{
-	int id;
-	int dimension;
-	float score;
+    int id;
+    int dimension;
+    float score;
     float *bounces;
 };
 

@@ -7,41 +7,41 @@ Page::Page(){
 }
 
 void Page::setPage(long pageID, long priority){
-	this->pageID = pageID;
-	this->key = -priority; // lower key is better
+    this->pageID = pageID;
+    this->key = -priority; // lower key is better
 }
 
 bool Page::operator==(const Page &p){
-	return (key==p.key);
+    return (key==p.key);
 }
 
 bool Page::operator<(const Page &p){
-	return (key<p.key);
+    return (key<p.key);
 }
 
 bool Page::operator>(const Page &p){
-	return (key>p.key);
+    return (key>p.key);
 }
 
 bool Page::operator<=(const Page &p){
-	return (key<=p.key);
+    return (key<=p.key);
 }
 
 bool Page::operator>=(const Page &p){
-	return (key>=p.key);
+    return (key>=p.key);
 }
 
 
 
 int left(int i) {
-		//left child is at 2*i(index of self) + 1
-		return 2*i + 1;
+        //left child is at 2*i(index of self) + 1
+        return 2*i + 1;
 }
 
 
 int right(int i) {
-				//right child is at 2*i(index of self) + 2
-		return  2* i + 2;
+                //right child is at 2*i(index of self) + 2
+        return  2* i + 2;
 }
 
 
@@ -93,124 +93,124 @@ template <class T> void MaxHeapify(T *input, int index, int size) {
 
 
 simpleBuffer::simpleBuffer(int bufSize) {
-	globalTime = 0;
-	currSize = 0;
-	pHits = bHits = pMisses = bMisses = 0;
-	this->bufSize = bufSize;
-	bf = new Page[bufSize];
+    globalTime = 0;
+    currSize = 0;
+    pHits = bHits = pMisses = bMisses = 0;
+    this->bufSize = bufSize;
+    bf = new Page[bufSize];
 }
 
 simpleBuffer::~simpleBuffer(){
-	delete[] bf;
+    delete[] bf;
 }
 
 int simpleBuffer::find(long pageID){
-	int ndx=-1;
-	for (int i=0; i<currSize; i++){
-		if (bf[i].pageID==pageID){
-			ndx=i;
-			break;
-		}
-	}
-	return ndx;
+    int ndx=-1;
+    for (int i=0; i<currSize; i++){
+        if (bf[i].pageID==pageID){
+            ndx=i;
+            break;
+        }
+    }
+    return ndx;
 }
 
 
 void simpleBuffer::reset(int bufSize){
-	this->bufSize = bufSize;
-	globalTime = 0;
-	currSize = 0;
-	pHits = bHits = pMisses = bMisses = 0;
-	delete[] bf;
-	bf = new Page[bufSize];
+    this->bufSize = bufSize;
+    globalTime = 0;
+    currSize = 0;
+    pHits = bHits = pMisses = bMisses = 0;
+    delete[] bf;
+    bf = new Page[bufSize];
 }
 
 
 ostream& operator <<(ostream &os, const simpleBuffer &buf){
-	os << "********* simpleBuffer *********" << endl;
-	os << "currSize = " << buf.currSize << endl;
-//		for (int i=0; i<currSize; i++){
-//			os << buf.bf[i].pageID << ": " << buf.bf[i].key << endl;
-//		}
-	os << "pHits = " << buf.pHits << endl;
-	os << "pMisses = " << buf.pMisses << endl;
-	os << "bHits = " << buf.bHits << endl;
-	os << "bMisses = " << buf.bMisses << endl;
-	os << "********************************" << endl;
-	return os;
+    os << "********* simpleBuffer *********" << endl;
+    os << "currSize = " << buf.currSize << endl;
+//        for (int i=0; i<currSize; i++){
+//            os << buf.bf[i].pageID << ": " << buf.bf[i].key << endl;
+//        }
+    os << "pHits = " << buf.pHits << endl;
+    os << "pMisses = " << buf.pMisses << endl;
+    os << "bHits = " << buf.bHits << endl;
+    os << "bMisses = " << buf.bMisses << endl;
+    os << "********************************" << endl;
+    return os;
 }
 
 
 void simpleBuffer::expand(int newSize) {
-	assert(newSize > currSize);
-	Page *newbf = new Page[newSize];
-	memcpy(newbf, bf, currSize*sizeof(Page));
-	delete[] bf;
-	bf = newbf;
-	bufSize = newSize;
+    assert(newSize > currSize);
+    Page *newbf = new Page[newSize];
+    memcpy(newbf, bf, currSize*sizeof(Page));
+    delete[] bf;
+    bf = newbf;
+    bufSize = newSize;
 }
 
 
 void simpleBuffer::shrink(int newSize) {
-//	assert(newSize < bufSize);
-	Page *newbf = new Page[newSize];
+//    assert(newSize < bufSize);
+    Page *newbf = new Page[newSize];
 
-	while (currSize > newSize) {
-		bf[0] = bf[currSize-1];
-		currSize--;
-		MaxHeapify<Page>(bf, 0, currSize);
-	}
+    while (currSize > newSize) {
+        bf[0] = bf[currSize-1];
+        currSize--;
+        MaxHeapify<Page>(bf, 0, currSize);
+    }
 
-	memcpy(newbf, bf, currSize*sizeof(Page));
-	delete[] bf;
-	bf = newbf;
-	bufSize = newSize;
+    memcpy(newbf, bf, currSize*sizeof(Page));
+    delete[] bf;
+    bf = newbf;
+    bufSize = newSize;
 }
 
 
 bool simpleBuffer::isHit(long realPageID, int type, long priority){
-	long pageID = type*MAXPAGE + realPageID;
-	bool hit = false;
+    long pageID = type*MAXPAGE + realPageID;
+    bool hit = false;
 
-	if (priority < 0) {
-		priority = ++globalTime;
-	}
+    if (priority < 0) {
+        priority = ++globalTime;
+    }
 
 
-	int ndx = find(pageID);
+    int ndx = find(pageID);
 
-	if (ndx == -1){
-		if (currSize < bufSize){
-			bf[currSize].setPage(pageID, priority);
-			currSize++;
-		}
-		else {
-			bf[0].setPage(pageID, priority);
-		}
-	}
-	else {
-		bf[ndx].setPage(pageID, priority);
-		hit = true;
-	}
-	MaxHeapify<Page>(bf, 0, currSize);
-	if (type == PPAGE) {
-		if (hit) {
-			pHits++;
-		}
-		else{
-			pMisses++;
-		}
-	}
-	else if (type == BPAGE) {
-		if (hit) {
-			bHits++;
-		}
-		else{
-			bMisses++;
-		}
-	}
+    if (ndx == -1){
+        if (currSize < bufSize){
+            bf[currSize].setPage(pageID, priority);
+            currSize++;
+        }
+        else {
+            bf[0].setPage(pageID, priority);
+        }
+    }
+    else {
+        bf[ndx].setPage(pageID, priority);
+        hit = true;
+    }
+    MaxHeapify<Page>(bf, 0, currSize);
+    if (type == PPAGE) {
+        if (hit) {
+            pHits++;
+        }
+        else{
+            pMisses++;
+        }
+    }
+    else if (type == BPAGE) {
+        if (hit) {
+            bHits++;
+        }
+        else{
+            bMisses++;
+        }
+    }
 
-	return hit;
+    return hit;
 }
 
 

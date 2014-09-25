@@ -32,10 +32,10 @@ float gaussian (float mean, float sigma){
 ************************************************************/
 
 float uniform(float _min, float _max){
-	int int_r = rand();
-	long base = RAND_MAX-1;
-	float f_r  = ((float) int_r) / base;
-	return (_max - _min) * f_r + _min;
+    int int_r = rand();
+    long base = RAND_MAX-1;
+    float f_r  = ((float) int_r) / base;
+    return (_max - _min) * f_r + _min;
 }
 
 /*************************************************************/
@@ -44,7 +44,7 @@ float uniform(float _min, float _max){
 **  original code by Christos Faloutsos, 1995
 
 **  The original node outputs discrete data only. The current**
-**  function remedies the problem.			                 **
+**  function remedies the problem.                             **
 **  Modified by Yufei Tao (08/Dec/02)                         **
 **************************************************************/
 float zipf(float x1, float x2, double p){
@@ -62,7 +62,7 @@ float zipf(float x1, float x2, double p){
    r = uniform(0., 1.)*HsubV;
    sum = 1.0; i=uniform(0,1);
    while( sum<r){
-	  i+=uniform(1, 2);
+      i+=uniform(1, 2);
       sum += 1.0/pow( (double)i, p);
    }
 
@@ -74,20 +74,20 @@ float zipf(float x1, float x2, double p){
 }
 
 float new_uniform(int _d_num){
-	float base=1;
-	float sum=0; 
-	for (int i=0; i<_d_num; i++){
-		int digit = (int) uniform(0, 10);
-		if (digit==10) digit=9;
-		sum+=base*digit;
-		base*=10;
-	}
-	return sum;
+    float base=1;
+    float sum=0; 
+    for (int i=0; i<_d_num; i++){
+        int digit = (int) uniform(0, 10);
+        if (digit==10) digit=9;
+        sum+=base*digit;
+        base*=10;
+    }
+    return sum;
 }
 
 float new_uniform(float _min, float _max){
-	float ran_base=9999999;
-	float ran=new_uniform(7);
-	return ran/ran_base*(_max-_min)+_min;
+    float ran_base=9999999;
+    float ran=new_uniform(7);
+    return ran/ran_base*(_max-_min)+_min;
 }
 

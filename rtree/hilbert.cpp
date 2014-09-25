@@ -61,35 +61,35 @@ bitTranspose(unsigned nDims, unsigned nBits, bitmask_t inCoords)
     {
       unsigned const shiftAmt = nDims1 * utB;
       bitmask_t const utFieldEnds =
-	inFieldEnds | (inFieldEnds << (shiftAmt+utB));
+    inFieldEnds | (inFieldEnds << (shiftAmt+utB));
       bitmask_t const utMask =
-	(utFieldEnds << utB) - utFieldEnds;
+    (utFieldEnds << utB) - utFieldEnds;
       bitmask_t utCoords = 0;
       unsigned d;
       if (inB & 1)
-	{
-	  bitmask_t const inFieldStarts = inFieldEnds << (inB-1);
-	  unsigned oddShift = 2*shiftAmt;
-	  for (d = 0; d < nDims; ++d)
-	    {
-	      bitmask_t in = inCoords & inMask;
-	      inCoords >>= inB;
-	      coords |= (in & inFieldStarts) <<	oddShift++;
-	      in &= ~inFieldStarts;
-	      in = (in | (in << shiftAmt)) & utMask;
-	      utCoords |= in << (d*utB);
-	    }
-	}
+    {
+      bitmask_t const inFieldStarts = inFieldEnds << (inB-1);
+      unsigned oddShift = 2*shiftAmt;
+      for (d = 0; d < nDims; ++d)
+        {
+          bitmask_t in = inCoords & inMask;
+          inCoords >>= inB;
+          coords |= (in & inFieldStarts) <<    oddShift++;
+          in &= ~inFieldStarts;
+          in = (in | (in << shiftAmt)) & utMask;
+          utCoords |= in << (d*utB);
+        }
+    }
       else
-	{
-	  for (d = 0; d < nDims; ++d)
-	    {
-	      bitmask_t in = inCoords & inMask;
-	      inCoords >>= inB;
-	      in = (in | (in << shiftAmt)) & utMask;
-	      utCoords |= in << (d*utB);
-	    }
-	}
+    {
+      for (d = 0; d < nDims; ++d)
+        {
+          bitmask_t in = inCoords & inMask;
+          inCoords >>= inB;
+          in = (in | (in << shiftAmt)) & utMask;
+          utCoords |= in << (d*utB);
+        }
+    }
       inCoords = utCoords;
       inB = utB;
       inFieldEnds = utFieldEnds;
@@ -109,10 +109,10 @@ bitTranspose(unsigned nDims, unsigned nBits, bitmask_t inCoords)
       bitmask_t out = 0;
       inCoords >>= nBits;
       for (b = nBits; b--;)
-	{
-	  out <<= nDims;
-	  out |= rdbit(in, b);
-	}
+    {
+      out <<= nDims;
+      out |= rdbit(in, b);
+    }
       coords |= out << d;
     }
   return coords;
@@ -143,36 +143,36 @@ hilbert_i2c(unsigned nDims, unsigned nBits, bitmask_t index, bitmask_t coord[])
       unsigned d;
 
       if (nBits > 1)
-	{
-	  unsigned const nDimsBits = nDims*nBits;
-	  halfmask_t const ndOnes = ones(halfmask_t,nDims);
-	  halfmask_t const nd1Ones= ndOnes >> 1; /* for adjust_rotation */
-	  unsigned b = nDimsBits;
-	  unsigned rotation = 0;
-	  halfmask_t flipBit = 0;
-	  bitmask_t const nthbits = ones(bitmask_t,nDimsBits) / ndOnes;
-	  index ^= (index ^ nthbits) >> 1;
-	  coords = 0;
-	  do
-	    {
-	      halfmask_t bits = (index >> (b-=nDims)) & ndOnes;
-	      coords <<= nDims;
-	      coords |= rotateLeft(bits, rotation, nDims) ^ flipBit;
-	      flipBit = (halfmask_t)1 << rotation;
-	      adjust_rotation(rotation,nDims,bits);
-	    } while (b);
-	  for (b = nDims; b < nDimsBits; b *= 2)
-	    coords ^= coords >> b;
-	  coords = bitTranspose(nBits, nDims, coords);
-	}
+    {
+      unsigned const nDimsBits = nDims*nBits;
+      halfmask_t const ndOnes = ones(halfmask_t,nDims);
+      halfmask_t const nd1Ones= ndOnes >> 1; /* for adjust_rotation */
+      unsigned b = nDimsBits;
+      unsigned rotation = 0;
+      halfmask_t flipBit = 0;
+      bitmask_t const nthbits = ones(bitmask_t,nDimsBits) / ndOnes;
+      index ^= (index ^ nthbits) >> 1;
+      coords = 0;
+      do
+        {
+          halfmask_t bits = (index >> (b-=nDims)) & ndOnes;
+          coords <<= nDims;
+          coords |= rotateLeft(bits, rotation, nDims) ^ flipBit;
+          flipBit = (halfmask_t)1 << rotation;
+          adjust_rotation(rotation,nDims,bits);
+        } while (b);
+      for (b = nDims; b < nDimsBits; b *= 2)
+        coords ^= coords >> b;
+      coords = bitTranspose(nBits, nDims, coords);
+    }
       else
-	coords = index ^ (index >> 1);
+    coords = index ^ (index >> 1);
 
       for (d = 0; d < nDims; ++d)
-	{
-	  coord[d] = coords & nbOnes;
-	  coords >>= nBits;
-	}
+    {
+      coord[d] = coords & nbOnes;
+      coords >>= nBits;
+    }
     }
   else
     coord[0] = index;
@@ -201,37 +201,37 @@ hilbert_c2i(unsigned nDims, unsigned nBits, bitmask_t const coord[])
       unsigned d;
       bitmask_t coords = 0;
       for (d = nDims; d--; )
-	{
-	  coords <<= nBits;
-	  coords |= coord[d];
-	}
+    {
+      coords <<= nBits;
+      coords |= coord[d];
+    }
 
       if (nBits > 1)
-	{
-	  halfmask_t const ndOnes = ones(halfmask_t,nDims);
-	  halfmask_t const nd1Ones= ndOnes >> 1; /* for adjust_rotation */
-	  unsigned b = nDimsBits;
-	  unsigned rotation = 0;
-	  halfmask_t flipBit = 0;
-	  bitmask_t const nthbits = ones(bitmask_t,nDimsBits) / ndOnes;
-	  coords = bitTranspose(nDims, nBits, coords);
-	  coords ^= coords >> nDims;
-	  index = 0;
-	  do
-	    {
-	      halfmask_t bits = (coords >> (b-=nDims)) & ndOnes;
-	      bits = rotateRight(flipBit ^ bits, rotation, nDims);
-	      index <<= nDims;
-	      index |= bits;
-	      flipBit = (halfmask_t)1 << rotation;
-	      adjust_rotation(rotation,nDims,bits);
-	    } while (b);
-	  index ^= nthbits >> 1;
-	}
+    {
+      halfmask_t const ndOnes = ones(halfmask_t,nDims);
+      halfmask_t const nd1Ones= ndOnes >> 1; /* for adjust_rotation */
+      unsigned b = nDimsBits;
+      unsigned rotation = 0;
+      halfmask_t flipBit = 0;
+      bitmask_t const nthbits = ones(bitmask_t,nDimsBits) / ndOnes;
+      coords = bitTranspose(nDims, nBits, coords);
+      coords ^= coords >> nDims;
+      index = 0;
+      do
+        {
+          halfmask_t bits = (coords >> (b-=nDims)) & ndOnes;
+          bits = rotateRight(flipBit ^ bits, rotation, nDims);
+          index <<= nDims;
+          index |= bits;
+          flipBit = (halfmask_t)1 << rotation;
+          adjust_rotation(rotation,nDims,bits);
+        } while (b);
+      index ^= nthbits >> 1;
+    }
       else
-	index = coords;
+    index = coords;
       for (d = 1; d < nDimsBits; d *= 2)
-	index ^= index >> d;
+    index ^= index >> d;
       return index;
     }
   else
@@ -243,9 +243,9 @@ hilbert_c2i(unsigned nDims, unsigned nBits, bitmask_t const coord[])
  */
 
 typedef bitmask_t (*BitReader) (unsigned nDims, unsigned nBytes,
-				char const* c, unsigned y);
+                char const* c, unsigned y);
 typedef void (*BitWriter) (unsigned d, unsigned nBytes,
-	   char* c, unsigned y, int fold);
+       char* c, unsigned y, int fold);
 
 
 #if defined(sparc)
@@ -281,7 +281,7 @@ getIntBits(unsigned nDims, unsigned nBytes, char const* c, unsigned y)
 #include <string.h>
 static void
 propogateIntBits(unsigned d, unsigned nBytes,
-		 char* c, unsigned y, int fold)
+         char* c, unsigned y, int fold)
 {
   unsigned const byteId = whichByte(nBytes,y);
   unsigned const b = y%8;
@@ -292,9 +292,9 @@ propogateIntBits(unsigned d, unsigned nBytes,
     {
       char notbit = ((target[byteId] >> b) & 1) - 1;
       if (notbit)
-	target[byteId] |= bthbit-1;
+    target[byteId] |= bthbit-1;
       else
-	target[byteId] &=  -bthbit;
+    target[byteId] &=  -bthbit;
       setBytes(target,byteId,nBytes,notbit);
     }
 }
@@ -321,18 +321,18 @@ typedef union ieee754_double
     struct
       {
 #if defined(__BIG_ENDIAN__)
-	unsigned int negative:1;
-	unsigned int exponent:11;
-	/* Together these comprise the mantissa.  */
-	unsigned int mantissa0:20;
-	unsigned int mantissa1:32;
-#else				/* Big endian.  */
-	/* Together these comprise the mantissa.  */
-	unsigned int mantissa1:32;
-	unsigned int mantissa0:20;
-	unsigned int exponent:11;
-	unsigned int negative:1;
-#endif				/* Little endian.  */
+    unsigned int negative:1;
+    unsigned int exponent:11;
+    /* Together these comprise the mantissa.  */
+    unsigned int mantissa0:20;
+    unsigned int mantissa1:32;
+#else                /* Big endian.  */
+    /* Together these comprise the mantissa.  */
+    unsigned int mantissa1:32;
+    unsigned int mantissa0:20;
+    unsigned int exponent:11;
+    unsigned int negative:1;
+#endif                /* Little endian.  */
       } ieee;
   } ieee754_double;
 
@@ -352,11 +352,11 @@ getIEEESignBits(unsigned nDims, double const* c)
 
 static bitmask_t
 getIEEEBits(unsigned nDims,
-	    unsigned ignoreMe, /* ignored */
-	    char const* cP,
-	    unsigned y)
+        unsigned ignoreMe, /* ignored */
+        char const* cP,
+        unsigned y)
      /* retrieve bits y of elements of double array c, where an expanded IEEE
-	double has 2100 bits. */
+    double has 2100 bits. */
 {
   unsigned d;
   double const* c = (double const*) cP;
@@ -368,11 +368,11 @@ getIEEEBits(unsigned nDims,
       unsigned normalized = (x.ieee.exponent != 0);
       unsigned diff = y - (x.ieee.exponent - normalized);
       if (diff <= 52)
-	bit ^= 1 & ((diff <  32)? x.ieee.mantissa1 >> diff:
-		    (diff <  52)? x.ieee.mantissa0 >> (diff - 32):
-		    /* else */    normalized);
+    bit ^= 1 & ((diff <  32)? x.ieee.mantissa1 >> diff:
+            (diff <  52)? x.ieee.mantissa0 >> (diff - 32):
+            /* else */    normalized);
       else
-	bit ^= (y == IEEErepBits-1);
+    bit ^= (y == IEEErepBits-1);
       
       bits |= bit << d;
     }
@@ -381,7 +381,7 @@ getIEEEBits(unsigned nDims,
 
 static void
 propogateIEEEBits(unsigned d, unsigned nBytes,
-		  char* cP, unsigned y, int fold)
+          char* cP, unsigned y, int fold)
 {
   ieee754_double* x = d + (ieee754_double*) cP;
   unsigned normalized = (x->ieee.exponent != 0);
@@ -393,7 +393,7 @@ propogateIEEEBits(unsigned d, unsigned nBytes,
       x->ieee.mantissa1 &= ~(b-1);
       x->ieee.mantissa1 |= b;
       if (bit)
-	--x->ieee.mantissa1;
+    --x->ieee.mantissa1;
     }
   else if (diff < 52)
     {
@@ -402,27 +402,27 @@ propogateIEEEBits(unsigned d, unsigned nBytes,
       x->ieee.mantissa0 &= ~(b-1);
       x->ieee.mantissa0 |= b;
       if (bit)
-	--x->ieee.mantissa0;
+    --x->ieee.mantissa0;
       x->ieee.mantissa1 = bit?-1: 0;
     }
   else if (diff == 52) /* "flip" the implicit 1 bit */
     {
       if (normalized)
-	--x->ieee.exponent;
+    --x->ieee.exponent;
       else
-	x->ieee.exponent = 1;
+    x->ieee.exponent = 1;
       x->ieee.mantissa0 = -normalized;
       x->ieee.mantissa1 = -normalized;
     }
   else if (diff < IEEErepBits)
     {
       if (y == IEEErepBits-1)
-	{
-	  x->ieee.negative ^= 1;
-	  x->ieee.exponent = 0;
-	}
+    {
+      x->ieee.negative ^= 1;
+      x->ieee.exponent = 0;
+    }
       else
-	x->ieee.exponent = y - 51;
+    x->ieee.exponent = y - 51;
       x->ieee.mantissa0 = 0;
       x->ieee.mantissa1 = 0;
     }
@@ -438,7 +438,7 @@ getIEEEexptMax(unsigned nDims, double const* c)
       ieee754_double x;
       x.d = c[d];
       if (max < x.ieee.exponent)
-	max = x.ieee.exponent;
+    max = x.ieee.exponent;
     }
   if (max) --max;
   return max;
@@ -446,11 +446,11 @@ getIEEEexptMax(unsigned nDims, double const* c)
 
 static void
 getIEEEinitValues(double const* c1,
-		  unsigned y,
-		  unsigned nDims,
-		  unsigned* rotation,
-		  bitmask_t* bits,
-		  bitmask_t* index)
+          unsigned y,
+          unsigned nDims,
+          unsigned* rotation,
+          bitmask_t* bits,
+          bitmask_t* index)
 {
   bitmask_t const one = 1;
   unsigned d;
@@ -480,29 +480,29 @@ getIEEEinitValues(double const* c1,
     {
       *rotation = (IEEErepBits - y + 1 + leastZeroBit) % nDims;
       if (y < IEEErepBits-1)
-	{
-	  *bits = signBits ^ (one << ((*rotation + strayBit) % nDims));
-	  *index = signParity;
-	}
+    {
+      *bits = signBits ^ (one << ((*rotation + strayBit) % nDims));
+      *index = signParity;
+    }
       else /* y == IEEErepBits-1 */
-	{
-	  *bits = signBits ^ (ones(bitmask_t,nDims) &~ 1);
-	  *index =  signParity ^ (nDims&1);
-	}
+    {
+      *bits = signBits ^ (ones(bitmask_t,nDims) &~ 1);
+      *index =  signParity ^ (nDims&1);
+    }
     }
   else /* y % 2 == 0 */
     if (y < IEEErepBits)
       {
-	unsigned shift_amt = (IEEErepBits - y + leastZeroBit) % nDims;
-	*rotation = (shift_amt + 2 + strayBit) % nDims;
-	*bits = signBits ^ (one << shift_amt);
-	*index = signParity ^ 1;
+    unsigned shift_amt = (IEEErepBits - y + leastZeroBit) % nDims;
+    *rotation = (shift_amt + 2 + strayBit) % nDims;
+    *bits = signBits ^ (one << shift_amt);
+    *index = signParity ^ 1;
       }
     else /* y == IEEErepBits */
       {
-	*rotation = 0;
-	*bits = one << (nDims-1);
-	*index = 1;
+    *rotation = 0;
+    *bits = one << (nDims-1);
+    *index = 1;
       }
 }
 
@@ -525,12 +525,12 @@ getIEEEinitValues(double const* c1,
 
 static int
 hilbert_cmp_work(unsigned nDims, unsigned nBytes, unsigned nBits,
-		 unsigned max, unsigned y,
-		 char const* c1, char const* c2,
-		 unsigned rotation,
-		 bitmask_t bits,
-		 bitmask_t index,
-		 BitReader getBits)
+         unsigned max, unsigned y,
+         char const* c1, char const* c2,
+         unsigned rotation,
+         bitmask_t bits,
+         bitmask_t index,
+         BitReader getBits)
 {
   bitmask_t const one = 1;
   bitmask_t const nd1Ones = ones(bitmask_t,nDims) >> 1; /* used in adjust_rotation macro */
@@ -541,17 +541,17 @@ hilbert_cmp_work(unsigned nDims, unsigned nBytes, unsigned nBits,
       bits ^= reflection;
       bits = rotateRight(bits, rotation, nDims);
       if (diff)
-	{
-	  unsigned d;
-	  diff = rotateRight(diff, rotation, nDims);
-	  for (d = 1; d < nDims; d *= 2)
-	    {
-	      index ^= index >> d;
-	      bits  ^= bits  >> d;
-	      diff  ^= diff  >> d;
-	    }
-	  return (((index ^ y ^ nBits) & 1) == (bits < (bits^diff)))? -1: 1;
-	}
+    {
+      unsigned d;
+      diff = rotateRight(diff, rotation, nDims);
+      for (d = 1; d < nDims; d *= 2)
+        {
+          index ^= index >> d;
+          bits  ^= bits  >> d;
+          diff  ^= diff  >> d;
+        }
+      return (((index ^ y ^ nBits) & 1) == (bits < (bits^diff)))? -1: 1;
+    }
       index ^= bits;
       reflection ^= one << rotation;
       adjust_rotation(rotation,nDims,bits);
@@ -562,13 +562,13 @@ hilbert_cmp_work(unsigned nDims, unsigned nBytes, unsigned nBits,
 
 int
 hilbert_cmp(unsigned nDims, unsigned nBytes, unsigned nBits,
-	    void const* c1, void const* c2)
+        void const* c1, void const* c2)
 {
   bitmask_t const one = 1;
   bitmask_t bits = one << (nDims-1);
   return hilbert_cmp_work(nDims, nBytes, nBits, 0, nBits,
-			  (char const*)c1, (char const*)c2,
-			  0, bits, bits, getIntBits);
+              (char const*)c1, (char const*)c2,
+              0, bits, bits, getIntBits);
 }
 
 int
@@ -587,8 +587,8 @@ hilbert_ieee_cmp(unsigned nDims, double const* c1, double const* c2)
   
   getIEEEinitValues(c1, max+53, nDims, &rotation, &bits, &index);
   return hilbert_cmp_work(nDims, 8, 64, max, max+53,
-			  (char const*)c1, (char const*)c2,
-			  rotation, bits, index, getIEEEBits);
+              (char const*)c1, (char const*)c2,
+              rotation, bits, index, getIEEEBits);
 }
 
 /*****************************************************************
@@ -613,13 +613,13 @@ hilbert_ieee_cmp(unsigned nDims, double const* c1, double const* c2)
 
 static unsigned
 hilbert_box_vtx_work(unsigned nDims, unsigned nBytes, unsigned nBits,
-		     int findMin,
-		     unsigned max, unsigned y,
-		     char* c1, char* c2,
-		     unsigned rotation,
-		     bitmask_t bits,
-		     bitmask_t index,
-		     BitReader getBits)
+             int findMin,
+             unsigned max, unsigned y,
+             char* c1, char* c2,
+             unsigned rotation,
+             bitmask_t bits,
+             bitmask_t index,
+             BitReader getBits)
 {
   bitmask_t const one = 1;
   bitmask_t const ndOnes = ones(bitmask_t,nDims);
@@ -631,35 +631,35 @@ hilbert_box_vtx_work(unsigned nDims, unsigned nBytes, unsigned nBits,
       bitmask_t reflection = getBits(nDims, nBytes, c1, y);
       bitmask_t diff = reflection ^ getBits(nDims, nBytes, c2, y);
       if (diff)
-	{
-	  unsigned d;
-	  bitmask_t smear = rotateRight(diff, rotation, nDims) >> 1;
-	  bitmask_t digit = rotateRight(bits ^ reflection, rotation, nDims);
-	  for (d = 1; d < nDims; d *= 2)
-	    {
-	      index ^= index >> d;
-	      digit ^= (digit  >> d) &~ smear;
-	      smear |= smear >> d;
-	    }
-	  index &= 1;
-	  if ((index ^ y ^ findMin) & 1)
-	    digit ^= smear+1;
-	  digit = rotateLeft(digit, rotation, nDims) & diff;
-	  reflection ^= digit;
+    {
+      unsigned d;
+      bitmask_t smear = rotateRight(diff, rotation, nDims) >> 1;
+      bitmask_t digit = rotateRight(bits ^ reflection, rotation, nDims);
+      for (d = 1; d < nDims; d *= 2)
+        {
+          index ^= index >> d;
+          digit ^= (digit  >> d) &~ smear;
+          smear |= smear >> d;
+        }
+      index &= 1;
+      if ((index ^ y ^ findMin) & 1)
+        digit ^= smear+1;
+      digit = rotateLeft(digit, rotation, nDims) & diff;
+      reflection ^= digit;
 
-	  for (d = 0; d < nDims; ++d)
-	    if (rdbit(diff, d))
-	      {
-		int way = rdbit(digit, d);
-		char* target = d*nBytes + (way? c1: c2);
-		char* const source = 2*d*nBytes + c1 - target + c2;
-		memcpy(target, source, nBytes);
-	      }
-	  
-	  bitsFolded |= diff;
-	  if (bitsFolded == ndOnes)
-	    return y;
-	}
+      for (d = 0; d < nDims; ++d)
+        if (rdbit(diff, d))
+          {
+        int way = rdbit(digit, d);
+        char* target = d*nBytes + (way? c1: c2);
+        char* const source = 2*d*nBytes + c1 - target + c2;
+        memcpy(target, source, nBytes);
+          }
+      
+      bitsFolded |= diff;
+      if (bitsFolded == ndOnes)
+        return y;
+    }
         
       bits ^= reflection;
       bits = rotateRight(bits, rotation, nDims);
@@ -673,18 +673,18 @@ hilbert_box_vtx_work(unsigned nDims, unsigned nBytes, unsigned nBits,
 
 unsigned
 hilbert_box_vtx(unsigned nDims, unsigned nBytes, unsigned nBits,
-		int findMin, void* c1, void* c2)
+        int findMin, void* c1, void* c2)
 {
   bitmask_t const one = 1;
   bitmask_t bits = one << (nDims-1);
   return hilbert_box_vtx_work(nDims, nBytes, nBits, findMin,
-			      0, nBits, (char*)c1, (char*)c2,
-			      0, bits, bits, getIntBits);
+                  0, nBits, (char*)c1, (char*)c2,
+                  0, bits, bits, getIntBits);
 }
 
 unsigned
 hilbert_ieee_box_vtx(unsigned nDims,
-		     int findMin, double* c1, double* c2)
+             int findMin, double* c1, double* c2)
 {
   unsigned rotation, max;
   bitmask_t bits, index;
@@ -700,8 +700,8 @@ hilbert_ieee_box_vtx(unsigned nDims,
   getIEEEinitValues(c1, max+53, nDims, &rotation, &bits, &index);
 
   return hilbert_box_vtx_work(nDims, 8, 64, findMin,
-			      max, max+53, (char *)c1, (char *)c2,
-			      rotation, bits, index, getIEEEBits);
+                  max, max+53, (char *)c1, (char *)c2,
+                  rotation, bits, index, getIEEEBits);
 }
 
 /*****************************************************************
@@ -722,14 +722,14 @@ hilbert_ieee_box_vtx(unsigned nDims,
  */
 unsigned
 hilbert_box_pt_work(unsigned nDims, unsigned nBytes, unsigned nBits,
-		    int findMin,
-		    unsigned max, unsigned y,
-		    char* c1, char* c2,
-		    unsigned rotation,
-		    bitmask_t bits,
-		    bitmask_t index,
-		    BitReader getBits,
-		    BitWriter propogateBits)
+            int findMin,
+            unsigned max, unsigned y,
+            char* c1, char* c2,
+            unsigned rotation,
+            bitmask_t bits,
+            bitmask_t index,
+            BitReader getBits,
+            BitWriter propogateBits)
 {
   bitmask_t const one = 1;
   bitmask_t const nd1Ones = ones(bitmask_t,nDims) >> 1;
@@ -741,35 +741,35 @@ hilbert_box_pt_work(unsigned nDims, unsigned nBytes, unsigned nBits,
       bitmask_t reflection = getBits(nDims, nBytes, c1, y);
       bitmask_t diff = reflection ^ getBits(nDims, nBytes, c2, y);
       if (diff)
-	{
-	  bitmask_t smear = rotateRight(diff, rotation, nDims) >> 1;
-	  bitmask_t digit = rotateRight(bits ^ reflection, rotation, nDims);
-	  unsigned d;
-	  for (d = 1; d < nDims; d *= 2)
-	    {
-	      index ^= index >> d;
-	      digit ^= (digit  >> d) &~ smear;
-	      smear |= smear >> d;
-	    }
-	  smearSum += smear;
-	  index &= 1;
-	  if ((index ^ y ^ findMin) & 1)
-	    digit ^= smear+1;
-	  digit = rotateLeft(digit, rotation, nDims) & diff;
-	  reflection ^= digit;
+    {
+      bitmask_t smear = rotateRight(diff, rotation, nDims) >> 1;
+      bitmask_t digit = rotateRight(bits ^ reflection, rotation, nDims);
+      unsigned d;
+      for (d = 1; d < nDims; d *= 2)
+        {
+          index ^= index >> d;
+          digit ^= (digit  >> d) &~ smear;
+          smear |= smear >> d;
+        }
+      smearSum += smear;
+      index &= 1;
+      if ((index ^ y ^ findMin) & 1)
+        digit ^= smear+1;
+      digit = rotateLeft(digit, rotation, nDims) & diff;
+      reflection ^= digit;
 
-	  for (d = 0; d < nDims; ++d)
-	    if (rdbit(diff, d))
-	      {
-		int way = rdbit(digit, d);
-		char* c = way? c1: c2;
-		bitmask_t fold = way? fold1: fold2;
-		propogateBits(d, nBytes, c, y, rdbit(fold, d));
-	      }
-	  diff ^= digit;
-	  fold1 |= digit;
-	  fold2 |= diff;
-	}
+      for (d = 0; d < nDims; ++d)
+        if (rdbit(diff, d))
+          {
+        int way = rdbit(digit, d);
+        char* c = way? c1: c2;
+        bitmask_t fold = way? fold1: fold2;
+        propogateBits(d, nBytes, c, y, rdbit(fold, d));
+          }
+      diff ^= digit;
+      fold1 |= digit;
+      fold2 |= diff;
+    }
         
       bits ^= reflection;
       bits = rotateRight(bits, rotation, nDims);
@@ -783,19 +783,19 @@ hilbert_box_pt_work(unsigned nDims, unsigned nBytes, unsigned nBits,
 
 unsigned
 hilbert_box_pt(unsigned nDims, unsigned nBytes, unsigned nBits,
-		int findMin, void* c1, void* c2)
+        int findMin, void* c1, void* c2)
 {
   bitmask_t const one = 1;
   bitmask_t bits = one << (nDims-1);
   return hilbert_box_pt_work(nDims, nBytes, nBits, findMin,
-			     0, nBits, (char*)c1, (char*)c2,
-			     0, bits, bits,
-			     getIntBits, propogateIntBits);
+                 0, nBits, (char*)c1, (char*)c2,
+                 0, bits, bits,
+                 getIntBits, propogateIntBits);
 }
 
 unsigned
 hilbert_ieee_box_pt(unsigned nDims,
-		    int findMin, double* c1, double* c2)
+            int findMin, double* c1, double* c2)
 {
   unsigned rotation, max;
   bitmask_t bits, index;
@@ -807,9 +807,9 @@ hilbert_ieee_box_pt(unsigned nDims,
       bits = (bitmask_t)1 << (nDims-1);
       index = 1;
       hilbert_box_pt_work(nDims, 8, 64, findMin,
-			  IEEErepBits-1, IEEErepBits, (char *)c1, (char *)c2,
-			  rotation, bits, index,
-			  getIEEEBits, propogateIEEEBits);
+              IEEErepBits-1, IEEErepBits, (char *)c1, (char *)c2,
+              rotation, bits, index,
+              getIEEEBits, propogateIEEEBits);
     }
   
   /* having put everything in the same orthant, start */
@@ -822,9 +822,9 @@ hilbert_ieee_box_pt(unsigned nDims,
   getIEEEinitValues(c1, max+53, nDims, &rotation, &bits, &index);
 
   return hilbert_box_pt_work(nDims, 8, 64, findMin,
-			     max, max+53, (char *)c1, (char *)c2,
-			     rotation, bits, index,
-			     getIEEEBits, propogateIEEEBits);
+                 max, max+53, (char *)c1, (char *)c2,
+                 rotation, bits, index,
+                 getIEEEBits, propogateIEEEBits);
 }
 
 /*****************************************************************
@@ -851,7 +851,7 @@ hilbert_ieee_box_pt(unsigned nDims,
  */
 int
 hilbert_nextinbox(unsigned nDims, unsigned nBytes, unsigned nBits,
-		  int findPrev, void* c1V, void* c2V, void const* ptV)
+          int findPrev, void* c1V, void* c2V, void const* ptV)
 {
   bitmask_t const one = 1;
   unsigned y = nBits;
@@ -875,140 +875,140 @@ hilbert_nextinbox(unsigned nDims, unsigned nBytes, unsigned nBits,
     {
       bitmask_t reflection = getIntBits(nDims, nBytes, pt, y);
       bitmask_t diff = reflection ^ /* planes that separate box and point */
-	((getIntBits(nDims, nBytes, c1, y) &~ fold1) | valu1);
+    ((getIntBits(nDims, nBytes, c1, y) &~ fold1) | valu1);
 
       if (diff)
-	/* some coordinate planes separate point from box or
-	   dividing box or both; smear the bits of diff to reflect that
-	   after the first diff dimension, they might as well all be
-	   diffing; adjust the diff to reflect the fact that diffed
-	   dimensions don't matter. */
-	{
-	  /* compute (the complement of) a "digit" in the integer index of this
-	     point */
-	  bitmask_t cornerdiff = (diff ^ reflection) ^ /* separate box crnrs */
-	    ((getIntBits(nDims, nBytes, c2, y) &~ fold2) | valu2);
-	  bitmask_t separator = diff & ~cornerdiff;
-	  /* eventually, the most significant separating cutting plane */
-	  bitmask_t firstSeparator;
-	  /* bits less significant than the msb of separator are irrelevant;
-	     for convenience, call them all separators too */
-	  bitmask_t rotSep = rotateRight(separator, rotation, nDims);
-	  /* compute the (complement of the) digit of the hilbert code
-	     assoc with point */
-	  bitmask_t digit = rotateRight(bits ^ reflection, rotation, nDims);
-	  unsigned d;
-	  for (d = 1; d < nDims; d *= 2)
-	    {
-	      index ^= index >> d;
-	      digit ^= digit >> d;
-	      rotSep |= rotSep >> d;
-	    }
-	  index &= 1;
-	  digit &= rotSep;
-	  if ((index ^ y ^ findPrev) & 1)
-	    digit ^= rotSep;
+    /* some coordinate planes separate point from box or
+       dividing box or both; smear the bits of diff to reflect that
+       after the first diff dimension, they might as well all be
+       diffing; adjust the diff to reflect the fact that diffed
+       dimensions don't matter. */
+    {
+      /* compute (the complement of) a "digit" in the integer index of this
+         point */
+      bitmask_t cornerdiff = (diff ^ reflection) ^ /* separate box crnrs */
+        ((getIntBits(nDims, nBytes, c2, y) &~ fold2) | valu2);
+      bitmask_t separator = diff & ~cornerdiff;
+      /* eventually, the most significant separating cutting plane */
+      bitmask_t firstSeparator;
+      /* bits less significant than the msb of separator are irrelevant;
+         for convenience, call them all separators too */
+      bitmask_t rotSep = rotateRight(separator, rotation, nDims);
+      /* compute the (complement of the) digit of the hilbert code
+         assoc with point */
+      bitmask_t digit = rotateRight(bits ^ reflection, rotation, nDims);
+      unsigned d;
+      for (d = 1; d < nDims; d *= 2)
+        {
+          index ^= index >> d;
+          digit ^= digit >> d;
+          rotSep |= rotSep >> d;
+        }
+      index &= 1;
+      digit &= rotSep;
+      if ((index ^ y ^ findPrev) & 1)
+        digit ^= rotSep;
 
-	  separator = rotateLeft(rotSep, rotation, nDims);
-	  rotSep -= rotSep >> 1;
-	  firstSeparator = rotateLeft(rotSep, rotation, nDims);
-	  /* forget about all the planes that split the box, except those that
-	     are more significant than the most significant separator. */
-	  cornerdiff &= ~separator;
+      separator = rotateLeft(rotSep, rotation, nDims);
+      rotSep -= rotSep >> 1;
+      firstSeparator = rotateLeft(rotSep, rotation, nDims);
+      /* forget about all the planes that split the box, except those that
+         are more significant than the most significant separator. */
+      cornerdiff &= ~separator;
               
-	  if (cornerdiff && digit)
-	    /* some coordinate planes divide the box.  Call the part of the
-	       box in the same orthant as the point "here" and the part of
-	       the box in the next (or previous) orthant "there".  Remember
-	       what the "there" orthant of the box looks like in case it
-	       turns out that the curve doesn't reenter the box "here" after
-	       (before) passing thru point.  Continue working with the
-	       "here" part. If there is no "there" there, skip it */
-	    {
-	      p_firstSeparator = digit & -digit;
-	      p_separator = 2*p_firstSeparator-1;
-	      p_separator = rotateLeft(p_separator, rotation, nDims);
-	      p_firstSeparator = rotateLeft(p_firstSeparator, rotation, nDims);
-	      p_cornerdiff = cornerdiff &~ (p_separator ^ p_firstSeparator);
-	      p_y = y;
-	      p_reflection = reflection ^ p_firstSeparator;
-	      p_fold1 = fold1;
-	      p_fold2 = fold2;
-	      p_valu1 = valu1;
-	      p_valu2 = valu2;
-	    }
+      if (cornerdiff && digit)
+        /* some coordinate planes divide the box.  Call the part of the
+           box in the same orthant as the point "here" and the part of
+           the box in the next (or previous) orthant "there".  Remember
+           what the "there" orthant of the box looks like in case it
+           turns out that the curve doesn't reenter the box "here" after
+           (before) passing thru point.  Continue working with the
+           "here" part. If there is no "there" there, skip it */
+        {
+          p_firstSeparator = digit & -digit;
+          p_separator = 2*p_firstSeparator-1;
+          p_separator = rotateLeft(p_separator, rotation, nDims);
+          p_firstSeparator = rotateLeft(p_firstSeparator, rotation, nDims);
+          p_cornerdiff = cornerdiff &~ (p_separator ^ p_firstSeparator);
+          p_y = y;
+          p_reflection = reflection ^ p_firstSeparator;
+          p_fold1 = fold1;
+          p_fold2 = fold2;
+          p_valu1 = valu1;
+          p_valu2 = valu2;
+        }
 
-	  if (digit < rotSep)
+      if (digit < rotSep)
 
-	    /* use next box */
-	    {
-	      if (!p_separator) return 0; /* no next point */
-	      separator = p_separator;
-	      firstSeparator = p_firstSeparator;
-	      y = p_y;
-	      cornerdiff = p_cornerdiff;
-	      reflection = p_reflection;
-	      fold1 = p_fold1;
-	      fold2 = p_fold2;
-	      valu1 = p_valu1;
-	      valu2 = p_valu2;
-	    }
+        /* use next box */
+        {
+          if (!p_separator) return 0; /* no next point */
+          separator = p_separator;
+          firstSeparator = p_firstSeparator;
+          y = p_y;
+          cornerdiff = p_cornerdiff;
+          reflection = p_reflection;
+          fold1 = p_fold1;
+          fold2 = p_fold2;
+          valu1 = p_valu1;
+          valu2 = p_valu2;
+        }
         
-	  if (cornerdiff)
-	    {
-	      /* reduce currbox */
-	      bitmask_t corner = diff & cornerdiff;
-	      cornerdiff ^= corner;
-	      fold1 |= corner;
-	      fold2 |= cornerdiff;
-	      valu1 |= ~reflection & corner;
-	      valu2 |= ~reflection & cornerdiff;
-	    }
+      if (cornerdiff)
+        {
+          /* reduce currbox */
+          bitmask_t corner = diff & cornerdiff;
+          cornerdiff ^= corner;
+          fold1 |= corner;
+          fold2 |= cornerdiff;
+          valu1 |= ~reflection & corner;
+          valu2 |= ~reflection & cornerdiff;
+        }
 
-	  separator ^= firstSeparator;
-	  if (firstSeparator)
-	    /* we have completely separated the point from a part of the box
-	       ahead of it on the curve; almost done */
-	    {
-	      unsigned byteId = whichByte(nBytes,y);
-	      bitmask_t bthbit = one << y%8;
-	      for (d = 0; d < nDims; ++d)
-		{
-		  char lo1, lo2;
-		  char* cc1 = &c1[d*nBytes];
-		  char* cc2 = &c2[d*nBytes];
-		  char const* pnt = &pt[d*nBytes];
-		  char hibits = -bthbit;
-		  char hipart = pnt[byteId] & hibits;
-		  memcpy(cc1, pnt, byteId);
-		  memcpy(cc2, pnt, byteId);
+      separator ^= firstSeparator;
+      if (firstSeparator)
+        /* we have completely separated the point from a part of the box
+           ahead of it on the curve; almost done */
+        {
+          unsigned byteId = whichByte(nBytes,y);
+          bitmask_t bthbit = one << y%8;
+          for (d = 0; d < nDims; ++d)
+        {
+          char lo1, lo2;
+          char* cc1 = &c1[d*nBytes];
+          char* cc2 = &c2[d*nBytes];
+          char const* pnt = &pt[d*nBytes];
+          char hibits = -bthbit;
+          char hipart = pnt[byteId] & hibits;
+          memcpy(cc1, pnt, byteId);
+          memcpy(cc2, pnt, byteId);
 
-		  if (rdbit(separator, d))
-		    hibits ^= bthbit;
-		  if (rdbit(firstSeparator, d))
-		    hipart ^= bthbit;
+          if (rdbit(separator, d))
+            hibits ^= bthbit;
+          if (rdbit(firstSeparator, d))
+            hipart ^= bthbit;
 
-		  if (rdbit(fold1, d))
-		    {
-		      lo1 = -rdbit(valu1, d);
-		      setBytes(cc1,byteId,nBytes,lo1);
-		    }
-		  else lo1 = cc1[byteId];
-		  cc1[byteId] = hipart | (lo1 &~ hibits);
+          if (rdbit(fold1, d))
+            {
+              lo1 = -rdbit(valu1, d);
+              setBytes(cc1,byteId,nBytes,lo1);
+            }
+          else lo1 = cc1[byteId];
+          cc1[byteId] = hipart | (lo1 &~ hibits);
 
-		  if (rdbit(fold2, d))
-		    {
-		      lo2 = -rdbit(valu2, d);
-		      setBytes(cc2,byteId,nBytes,lo2);
-		    }
-		  else lo2 = cc2[byteId];
-		  cc2[byteId] = hipart | (lo2 &~ hibits);
-		}
+          if (rdbit(fold2, d))
+            {
+              lo2 = -rdbit(valu2, d);
+              setBytes(cc2,byteId,nBytes,lo2);
+            }
+          else lo2 = cc2[byteId];
+          cc2[byteId] = hipart | (lo2 &~ hibits);
+        }
 
-	      hilbert_box_pt(nDims, nBytes, nBits, !findPrev, c1V, c2V);
-	      return 1;
-	    }
-	}
+          hilbert_box_pt(nDims, nBytes, nBits, !findPrev, c1V, c2V);
+          return 1;
+        }
+    }
         
       bits ^= reflection;
       bits = rotateRight(bits, rotation, nDims);
@@ -1186,47 +1186,47 @@ int main()
 
       for (r = 0; r < nPrints; ++r)
         {
-	  bitmask_t coord1[maxDim];
-	  int miscount = 0;
+      bitmask_t coord1[maxDim];
+      int miscount = 0;
           hilbert_i2c( nDims, nBits, r, coord );
           printf("%d: ", (unsigned)r);
           for (i = 0; i < nDims; ++i)
-	    {
-	      int diff = (int)(coord[i] - coordPrev[i]);
-	      miscount += abs(diff);
-	      coordPrev[i] = coord[i];
-	      printf(" %d", (unsigned)coord[i]);
-	    }
-	  if (r > 0 && miscount != 1)
-	    printf(".....error");
-	  printf("\n");
+        {
+          int diff = (int)(coord[i] - coordPrev[i]);
+          miscount += abs(diff);
+          coordPrev[i] = coord[i];
+          printf(" %d", (unsigned)coord[i]);
+        }
+      if (r > 0 && miscount != 1)
+        printf(".....error");
+      printf("\n");
           r1 = hilbert_c2i( nDims, nBits, coord );
           if ( r != r1 )
             printf( "r = 0x%x; r1 = 0x%x\n", (unsigned)r, (unsigned)r1);
-	  for (i = 0; i < nDims; ++i)
-	    coord[i] = coordPrev[i];
+      for (i = 0; i < nDims; ++i)
+        coord[i] = coordPrev[i];
 
-	  if (! orderCheck)
-	    continue;
-	  
-	  for (r1 = 0; r1 < r; ++r1 )
-	    {
-	      unsigned ans;
-	      hilbert_i2c( nDims, nBits, r1, coord1 );
-	      ans = hilbert_cmp( nDims, sizeof(coord[0]), nBits, coord, coord1);
-	      if (ans != 1)
-		{
-		  int width = (nDims*nBits + 3) / 4;
-		  printf( "cmp r = 0x%0*x; r1 = 0x%0*x, ans = %2d\n",
-			  width, (unsigned)r,
-			  width, (unsigned)r1, ans );
-		}
-	    }
-	  hilbert_i2c( nDims, nBits, r1, coord1 );
-	  if (hilbert_cmp( nDims, sizeof(coord[0]), nBits, coord, coord1) != 0)
-	    printf( "cmp r = 0x%0*x; r1 = 0x%0*x\n", (nDims*nBits+3)/4, (unsigned)r,
-		    (nDims*nBits+3)/4, (unsigned)r1 );
-	  
+      if (! orderCheck)
+        continue;
+      
+      for (r1 = 0; r1 < r; ++r1 )
+        {
+          unsigned ans;
+          hilbert_i2c( nDims, nBits, r1, coord1 );
+          ans = hilbert_cmp( nDims, sizeof(coord[0]), nBits, coord, coord1);
+          if (ans != 1)
+        {
+          int width = (nDims*nBits + 3) / 4;
+          printf( "cmp r = 0x%0*x; r1 = 0x%0*x, ans = %2d\n",
+              width, (unsigned)r,
+              width, (unsigned)r1, ans );
+        }
+        }
+      hilbert_i2c( nDims, nBits, r1, coord1 );
+      if (hilbert_cmp( nDims, sizeof(coord[0]), nBits, coord, coord1) != 0)
+        printf( "cmp r = 0x%0*x; r1 = 0x%0*x\n", (nDims*nBits+3)/4, (unsigned)r,
+            (nDims*nBits+3)/4, (unsigned)r1 );
+      
         }
     }
   return 0;
@@ -1290,7 +1290,7 @@ int main()
     {
       printf("Orth %2d\n", k);
       for (i = 0; i < nDims; ++i)
-	coord[i] = ((k>>i)&1)? -1.: 1.;
+    coord[i] = ((k>>i)&1)? -1.: 1.;
 
 
       hilbert_ieee_cmp( nDims, coord, coord);
@@ -1348,7 +1348,7 @@ int main()
     }
   
   hilbert_box_vtx(nDims, sizeof(unsigned), 8*sizeof(unsigned),
-		  1, cornerlo, work);
+          1, cornerlo, work);
   printf("Predicted lo corner: ");
   for (k = 0; k < nDims; ++k)
     printf("%4u", cornerlo[k]);
@@ -1363,7 +1363,7 @@ int main()
     }
   
   hilbert_box_vtx(nDims, sizeof(unsigned), 8*sizeof(unsigned),
-		  0, work, cornerhi);
+          0, work, cornerhi);
   printf("Predicted hi corner: ");
   for (k = 0; k < nDims; ++k)
     printf("%4u", cornerhi[k]);
@@ -1375,10 +1375,10 @@ int main()
       unsigned j;
       unsigned* eltk = &array[k][0];
       for (j = 0; j < nDims; ++j)
-	{
-	  unsigned* src = ((k>>j)&1)? corner1: corner0;
-	  eltk[j] = src[j];
-	}
+    {
+      unsigned* src = ((k>>j)&1)? corner1: corner0;
+      eltk[j] = src[j];
+    }
     }
 
   g_nDims = nDims;
@@ -1390,7 +1390,7 @@ int main()
       unsigned j;
       unsigned* eltk = &array[k][0];
       for (j = 0; j < nDims; ++j)
-	printf("%4u", eltk[j]);
+    printf("%4u", eltk[j]);
       printf("\n");
     }
   free((char*)array);
@@ -1431,55 +1431,55 @@ int main()
   for (i = 0; i < 10000; ++i)
     {
       for (k = 0; k < nDims; ++k)
-	{
-	  corner0[k] = 2.*drand48() - 1.;
-	  corner1[k] = 2.*drand48() - 1.;
-	}
+    {
+      corner0[k] = 2.*drand48() - 1.;
+      corner1[k] = 2.*drand48() - 1.;
+    }
   
       /* find first corner */
       for (k = 0; k < nDims; ++k)
-	{
-	  cornerlo[k] = corner0[k];
-	  work[k] = corner1[k];
-	}
+    {
+      cornerlo[k] = corner0[k];
+      work[k] = corner1[k];
+    }
   
       hilbert_ieee_box_vtx(nDims, 1, cornerlo, work);
     
       /* find last corner */
       for (k = 0; k < nDims; ++k)
-	{
-	  work[k] = corner0[k];
-	  cornerhi[k] = corner1[k];
-	}
+    {
+      work[k] = corner0[k];
+      cornerhi[k] = corner1[k];
+    }
   
       hilbert_ieee_box_vtx(nDims, 0, work, cornerhi);
 
       array = (array_t*) malloc(maxDim*sizeof(key_t) << nDims);
       for (k = 0; k < (1<<nDims); ++k)
-	{
-	  unsigned j;
-	  key_t* eltk = &array[k][0];
-	  for (j = 0; j < nDims; ++j)
-	    {
-	      key_t* src = ((k>>j)&1)? corner1: corner0;
-	      eltk[j] = src[j];
-	    }
-	}
+    {
+      unsigned j;
+      key_t* eltk = &array[k][0];
+      for (j = 0; j < nDims; ++j)
+        {
+          key_t* src = ((k>>j)&1)? corner1: corner0;
+          eltk[j] = src[j];
+        }
+    }
 
       g_nDims = nDims;
       qsort(array, (1<<nDims), maxDim*sizeof(key_t), cmp);
 
       for (k = 0; k < (1<<nDims); k += (1 << nDims) - 1)
-	{
-	  unsigned j;
-	  int mismatch = 0;
-	  key_t* eltk = &array[k][0];
-	  for (j = 0; j < nDims & !mismatch; ++j)
-	    {
-	      mismatch = (eltk[j] != ((k==0)? cornerlo: cornerhi)[j]);
-	    }
-	  assert (!mismatch);
-	}
+    {
+      unsigned j;
+      int mismatch = 0;
+      key_t* eltk = &array[k][0];
+      for (j = 0; j < nDims & !mismatch; ++j)
+        {
+          mismatch = (eltk[j] != ((k==0)? cornerlo: cornerhi)[j]);
+        }
+      assert (!mismatch);
+    }
       free((char*)array);
     }
   return 0;
@@ -1542,7 +1542,7 @@ int main()
     }
   
   hilbert_box_pt(nDims, sizeof(unsigned), 8*sizeof(unsigned),
-		 1, pointlo, work);
+         1, pointlo, work);
   printf("Predicted lo point: ");
   for (k = 0; k < nDims; ++k)
     printf("%4u", pointlo[k]);
@@ -1557,7 +1557,7 @@ int main()
     }
   
   hilbert_box_pt(nDims, sizeof(unsigned), 8*sizeof(unsigned),
-		 0, work, pointhi);
+         0, work, pointhi);
   printf("Predicted hi point: ");
   for (k = 0; k < nDims; ++k)
     printf("%4u", pointhi[k]);
@@ -1580,15 +1580,15 @@ int main()
       int boundary = 0;
       
       for (j = 0; j < nDims; ++j)
-	{
-	  unsigned diff1 = point1[j] - point0[j] + 1;
-	  unsigned pos = point0[j] + (kk % diff1);
-	  boundary |= (point0[j] == pos || pos == point1[j]);
-	  eltk[j] = pos;
-	  kk /= diff1;
-	}
+    {
+      unsigned diff1 = point1[j] - point0[j] + 1;
+      unsigned pos = point0[j] + (kk % diff1);
+      boundary |= (point0[j] == pos || pos == point1[j]);
+      eltk[j] = pos;
+      kk /= diff1;
+    }
       if (boundary)
-	++nextItem;
+    ++nextItem;
     }
 
   g_nDims = nDims;
@@ -1600,7 +1600,7 @@ int main()
       unsigned j;
       unsigned* eltk = &array[k][0];
       for (j = 0; j < nDims; ++j)
-	printf("%4u", eltk[j]);
+    printf("%4u", eltk[j]);
       printf("\n");
     }
   free((char*)array);
@@ -1672,33 +1672,33 @@ int main()
     {
       double pt1[maxDim], pt2[maxDim];
       for (k = 0; k < nDims; ++k)
-	{
-	  if (i % nDims == k)
-	    pt1[k] = point0[k];
-	  else
-	    pt1[k] = point0[k] + drand48()*(point1[k]-point0[k]);
-	}
-      for (k = 0; k < nDims; ++k)
-	{
-	  if (i % nDims == k)
-	    pt2[k] = point1[k];
-	  else
-	    pt2[k] = point0[k] + drand48()*(point1[k]-point0[k]);
-	}
-      if (hilbert_ieee_cmp(nDims, pt1, pt2) < 0)
-	{
-	  if (hilbert_ieee_cmp(nDims, pt1, pointlo) < 0)
-	    memcpy(pointlo, pt1, maxDim*sizeof(double));
-	  if (hilbert_ieee_cmp(nDims, pointhi, pt2) < 0)
-	    memcpy(pointhi, pt2, maxDim*sizeof(double));
-	}
+    {
+      if (i % nDims == k)
+        pt1[k] = point0[k];
       else
-	{
-	  if (hilbert_ieee_cmp(nDims, pt2, pointlo) < 0)
-	    memcpy(pointlo, pt2, maxDim*sizeof(double));
-	  if (hilbert_ieee_cmp(nDims, pointhi, pt1) < 0)
-	    memcpy(pointhi, pt1, maxDim*sizeof(double));
-	}
+        pt1[k] = point0[k] + drand48()*(point1[k]-point0[k]);
+    }
+      for (k = 0; k < nDims; ++k)
+    {
+      if (i % nDims == k)
+        pt2[k] = point1[k];
+      else
+        pt2[k] = point0[k] + drand48()*(point1[k]-point0[k]);
+    }
+      if (hilbert_ieee_cmp(nDims, pt1, pt2) < 0)
+    {
+      if (hilbert_ieee_cmp(nDims, pt1, pointlo) < 0)
+        memcpy(pointlo, pt1, maxDim*sizeof(double));
+      if (hilbert_ieee_cmp(nDims, pointhi, pt2) < 0)
+        memcpy(pointhi, pt2, maxDim*sizeof(double));
+    }
+      else
+    {
+      if (hilbert_ieee_cmp(nDims, pt2, pointlo) < 0)
+        memcpy(pointlo, pt2, maxDim*sizeof(double));
+      if (hilbert_ieee_cmp(nDims, pointhi, pt1) < 0)
+        memcpy(pointhi, pt1, maxDim*sizeof(double));
+    }
     }
   
   printf("Sorted hi and lo:\n");

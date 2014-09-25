@@ -23,9 +23,9 @@ LinList::~LinList(){
     akt = first;
     while (akt != NULL)
     {
-	hf = akt->next;
-	delete akt;
-	akt = hf;
+    hf = akt->next;
+    delete akt;
+    akt = hf;
     }
 }
 
@@ -42,13 +42,13 @@ void LinList::insert(Linkable *f)
     sd->next = first;
     sd->prev = NULL;
     if (first != NULL)
-	first->prev = sd;
+    first->prev = sd;
 
     // first, last und anz berichtigen
     anz++;
     first = sd;
     if (last == NULL)
-	last = sd;
+    last = sd;
 
     // Position ist undefiniert
     akt = NULL;
@@ -69,13 +69,13 @@ void LinList::insert_behind(Linkable *f)
     sd = new SLink;
     sd->d = f;
 
-	sd->next = NULL;
-	sd->prev = last;
-	if (last!=NULL) last->next = sd;
+    sd->next = NULL;
+    sd->prev = last;
+    if (last!=NULL) last->next = sd;
 
-	anz++;
-	last = sd;
-	if (first == NULL) first = sd;
+    anz++;
+    last = sd;
+    if (first == NULL) first = sd;
 }
 
 //========================================
@@ -86,22 +86,22 @@ void LinList::insert_behind(Linkable *f)
 //========================================
 void LinList::move_front()
 {
-	if (akt==first) return;
-	if (akt==last)
-	{
-		(akt->prev)->next = NULL;
-		last = akt->prev;
-	}
-	else
-	{
-		(akt->next)->prev = akt->prev;
-		(akt->prev)->next = akt->next;
-	}
-	first->prev = akt;
-	akt->prev = NULL;
-	akt->next = first;
-	first = akt;
-	akt_index = 0;
+    if (akt==first) return;
+    if (akt==last)
+    {
+        (akt->prev)->next = NULL;
+        last = akt->prev;
+    }
+    else
+    {
+        (akt->next)->prev = akt->prev;
+        (akt->prev)->next = akt->next;
+    }
+    first->prev = akt;
+    akt->prev = NULL;
+    akt->next = first;
+    first = akt;
+    akt_index = 0;
 }
 
 
@@ -112,54 +112,54 @@ bool LinList::erase()
     // Liste leer oder akt nicht definiert?
     if (akt)
     {
-	// Element ist erstes Element
-	if (akt == first)
-	{
-	    // Element ist einziges Element
-	    if (akt == last)
-	    {
-		akt_index = -1;
-		first = last = NULL;
-		n_akt = NULL;
-	    }
-	    else
-	    {
-		// Element ist erstes Element, aber nicht leztes
-		(akt->next)->prev = NULL;
-		first = akt->next;
-		n_akt = first;
-		akt_index = 0;
-	    }
-	}
-	else
-	{
-	    // Element ist letztes Element
-	    if (akt == last)
-	    {
-		(akt->prev)->next = NULL;
-		last = akt->prev;
-		n_akt = NULL;
-		akt_index = -1;
-	    }
-	    else
-	    // Element ist mitten in der Liste
-	    {
-		(akt->next)->prev = akt->prev;
-		(akt->prev)->next = akt->next;
-		n_akt = akt->next;
-		akt_index++;
-	    }
-	}
+    // Element ist erstes Element
+    if (akt == first)
+    {
+        // Element ist einziges Element
+        if (akt == last)
+        {
+        akt_index = -1;
+        first = last = NULL;
+        n_akt = NULL;
+        }
+        else
+        {
+        // Element ist erstes Element, aber nicht leztes
+        (akt->next)->prev = NULL;
+        first = akt->next;
+        n_akt = first;
+        akt_index = 0;
+        }
+    }
+    else
+    {
+        // Element ist letztes Element
+        if (akt == last)
+        {
+        (akt->prev)->next = NULL;
+        last = akt->prev;
+        n_akt = NULL;
+        akt_index = -1;
+        }
+        else
+        // Element ist mitten in der Liste
+        {
+        (akt->next)->prev = akt->prev;
+        (akt->prev)->next = akt->next;
+        n_akt = akt->next;
+        akt_index++;
+        }
+    }
 
-	// Speicher freigeben
-	delete akt;
+    // Speicher freigeben
+    delete akt;
 
-	// aktuelles Element setzen
-	akt = n_akt;
+    // aktuelles Element setzen
+    akt = n_akt;
 
-	// anz berichtigen
-	anz--;
-	return TRUE;
+    // anz berichtigen
+    anz--;
+    return TRUE;
     }
     return FALSE;
 }
@@ -174,58 +174,58 @@ Linkable* LinList::remove()
     // Liste leer oder akt nicht definiert?
     if (akt)
     {
-		// Element ist erstes Element
-		if (akt == first)
-		{
-			// Element ist einziges Element
-			if (akt == last)
-			{
-				akt_index = -1;
-				first = last = NULL;
-				n_akt = NULL;
-			}
-			else
-			{
-				// Element ist erstes Element, aber nicht leztes
-				(akt->next)->prev = NULL;
-				first = akt->next;
-				n_akt = first;
-				akt_index = 0;
-			}
-		}
-		else
-		{
-			// Element ist letztes Element
-			if (akt == last)
-			{
-				(akt->prev)->next = NULL;
-				last = akt->prev;
-				n_akt = NULL;
-				akt_index--;
-			}
-			else
-			// Element ist mitten in der Liste
-			{
-				(akt->next)->prev = akt->prev;
-				(akt->prev)->next = akt->next;
-				n_akt = akt->next;
-				akt_index++;
-			}
-		}
+        // Element ist erstes Element
+        if (akt == first)
+        {
+            // Element ist einziges Element
+            if (akt == last)
+            {
+                akt_index = -1;
+                first = last = NULL;
+                n_akt = NULL;
+            }
+            else
+            {
+                // Element ist erstes Element, aber nicht leztes
+                (akt->next)->prev = NULL;
+                first = akt->next;
+                n_akt = first;
+                akt_index = 0;
+            }
+        }
+        else
+        {
+            // Element ist letztes Element
+            if (akt == last)
+            {
+                (akt->prev)->next = NULL;
+                last = akt->prev;
+                n_akt = NULL;
+                akt_index--;
+            }
+            else
+            // Element ist mitten in der Liste
+            {
+                (akt->next)->prev = akt->prev;
+                (akt->prev)->next = akt->next;
+                n_akt = akt->next;
+                akt_index++;
+            }
+        }
 
-		// Speicher freigeben
-		delete akt;
+        // Speicher freigeben
+        delete akt;
 
-		// aktuelles Element setzen
-		akt = n_akt;
+        // aktuelles Element setzen
+        akt = n_akt;
 
-		// anz berichtigen
-		anz--;
-		if (akt!=NULL)
-			return akt->d;
-		else
-			return NULL;
-	}
+        // anz berichtigen
+        anz--;
+        if (akt!=NULL)
+            return akt->d;
+        else
+            return NULL;
+    }
     return NULL;
 }
 
@@ -237,77 +237,77 @@ Linkable* LinList::get(int i)
 
     // liegt das i-te Element ueberhaupt in der Liste?
     if (i >= anz)
-	return NULL;
+    return NULL;
 
     // ist die Liste schon auf das i-te Element positioniert?
     if (i == akt_index)
-	return akt->d;
+    return akt->d;
 
     // hat eine Positionierung der Liste stattgefunden?
     if (akt_index == -1)
     {
-	// i liegt naeher an first, als an last
-	if (i < (anz / 2))
-	{
-	    akt = first;
-	    akt_index = 0;
-	    ahead = TRUE;
-	}
-	else
-	{
-	    akt = last;
-	    akt_index = anz - 1;
-	    ahead = FALSE;
-	}
+    // i liegt naeher an first, als an last
+    if (i < (anz / 2))
+    {
+        akt = first;
+        akt_index = 0;
+        ahead = TRUE;
     }
     else
     {
-	// die gewuenschte Position liegt vor der aktuellen
-	if (i < akt_index)
-	{
-	    // liegt i naeher an first, als an akt_index?
-	    if ((akt_index - i) > i)
-	    {
-		akt = first;
-		akt_index = 0;
-		ahead = TRUE;
-	    }
-	    else
-		ahead = FALSE;
-	}
-	else
-	{
-	    // liegt i naeher an last, als an akt_index?
-	    if ((i - akt_index) > ((anz-1) - i))
-	    {
-		akt = last;
-		akt_index = anz - 1;
-		ahead = FALSE;
-	    }
-	    else
-		ahead = TRUE;
-	}
+        akt = last;
+        akt_index = anz - 1;
+        ahead = FALSE;
+    }
+    }
+    else
+    {
+    // die gewuenschte Position liegt vor der aktuellen
+    if (i < akt_index)
+    {
+        // liegt i naeher an first, als an akt_index?
+        if ((akt_index - i) > i)
+        {
+        akt = first;
+        akt_index = 0;
+        ahead = TRUE;
+        }
+        else
+        ahead = FALSE;
+    }
+    else
+    {
+        // liegt i naeher an last, als an akt_index?
+        if ((i - akt_index) > ((anz-1) - i))
+        {
+        akt = last;
+        akt_index = anz - 1;
+        ahead = FALSE;
+        }
+        else
+        ahead = TRUE;
+    }
     }
 
 
     // gesuchter Index liegt in next - Richtung
     if (ahead)
     {
-	for (j = akt_index; j < i; j++)
-	{
-	    if (!akt)
-		error("LinList::get: List seems to be inkonsistent", TRUE);
-	    akt = akt->next;
-	}
+    for (j = akt_index; j < i; j++)
+    {
+        if (!akt)
+        error("LinList::get: List seems to be inkonsistent", TRUE);
+        akt = akt->next;
+    }
     }
     else
     {
-	for (j = akt_index; j > i; j--)
-	{
-	    if (!akt)
-		error("LinList::get: List seems to be inkonsistent", TRUE);
-	    akt = akt->prev;
-	}
+    for (j = akt_index; j > i; j--)
+    {
+        if (!akt)
+        error("LinList::get: List seems to be inkonsistent", TRUE);
+        akt = akt->prev;
+    }
     }
 
     akt_index = i;
@@ -321,11 +321,11 @@ Linkable* LinList::get_first()
 
     if (akt != NULL)
     {
-	akt_index = 0;
-	return akt->d;
+    akt_index = 0;
+    return akt->d;
     }
     else
-	return NULL;
+    return NULL;
 }
 
 Linkable* LinList::get_last()
@@ -334,11 +334,11 @@ Linkable* LinList::get_last()
 
     if (akt != NULL)
     {
-	akt_index = anz - 1;
-	return akt->d;
+    akt_index = anz - 1;
+    return akt->d;
     }
     else
-	return NULL;
+    return NULL;
 }
 
 
@@ -348,13 +348,13 @@ Linkable* LinList::get_next()
 
     if (akt != NULL)
     {
-	akt_index++;
-	return akt->d;
+    akt_index++;
+    return akt->d;
     }
     else
     {
-	akt_index = -1;
-	return NULL;
+    akt_index = -1;
+    return NULL;
     }
 }
 
@@ -365,13 +365,13 @@ Linkable* LinList::get_prev()
 
     if (akt != NULL)
     {
-	akt_index--;
-	return akt->d;
+    akt_index--;
+    return akt->d;
     }
     else
     {
-	akt_index = -1;
-	return NULL;
+    akt_index = -1;
+    return NULL;
     }
 }
 
@@ -379,14 +379,14 @@ Linkable* LinList::get_prev()
 void LinList::print()
 {
     SLink *cur;
-	for (cur=first; cur!=NULL; cur=cur->next)
-	{
-		printf("[%d] (%d) ", cur->d->level, cur->d->son);
-		for (int i=0; i<cur->d->dimension*2; i++)
-			printf("%f ", cur->d->bounces[i]);
-//	  for (int i=0; i<cur->d->dimension; i++)
-//			printf("%f ", cur->d->bounces[2*i]);
-		printf("\n");
+    for (cur=first; cur!=NULL; cur=cur->next)
+    {
+        printf("[%d] (%d) ", cur->d->level, cur->d->son);
+        for (int i=0; i<cur->d->dimension*2; i++)
+            printf("%f ", cur->d->bounces[i]);
+//      for (int i=0; i<cur->d->dimension; i++)
+//            printf("%f ", cur->d->bounces[2*i]);
+        printf("\n");
     }
 }
 
@@ -400,59 +400,59 @@ void LinList::check()
     // Liste muss ganz leer sein
     if (old_f == NULL)
     {
-	if (last != NULL)
-	    error("LinList::check: first == NULL, last != NULL", FALSE);
-	if (anz != 0)
-	    error("LinList::check: first == NULL, anz != 0", FALSE);
-	return;
+    if (last != NULL)
+        error("LinList::check: first == NULL, last != NULL", FALSE);
+    if (anz != 0)
+        error("LinList::check: first == NULL, anz != 0", FALSE);
+    return;
     }
 
     myanz = 1;
     if (old_f->prev != NULL)
     {
-	error("LinList::check: Listenkopf.prev ungleich NULL", FALSE);
-	return;
+    error("LinList::check: Listenkopf.prev ungleich NULL", FALSE);
+    return;
     }
 
     for (f = old_f->next; f != NULL; f = f->next)
     {
-	if (f->prev != old_f)
-	{
-	    error("LinList::check: Rueckwaertsverkettung fehlerhaft", FALSE);
+    if (f->prev != old_f)
+    {
+        error("LinList::check: Rueckwaertsverkettung fehlerhaft", FALSE);
             return;
         }
-	if (old_f->next != f)
-	{
-	    error("LinList::check: Vorwaertsverkettung fehlerhaft", FALSE);
+    if (old_f->next != f)
+    {
+        error("LinList::check: Vorwaertsverkettung fehlerhaft", FALSE);
             return;
         }
-	old_f = f;
+    old_f = f;
 
-	myanz ++;
-	if (myanz > anz)
-	{
-	    sprintf(buffer, "LinList::check: anz (%d != %d) passt nicht", myanz, anz);
-	    error(buffer, FALSE);
-	    return;
-	}
+    myanz ++;
+    if (myanz > anz)
+    {
+        sprintf(buffer, "LinList::check: anz (%d != %d) passt nicht", myanz, anz);
+        error(buffer, FALSE);
+        return;
+    }
     }
 
     if (old_f->next != NULL)
     {
-	error("LinList::check: Listenende.next ungleich NULL", FALSE);
-	return;
+    error("LinList::check: Listenende.next ungleich NULL", FALSE);
+    return;
     }
 
     if (last != old_f)
     {
-	error("LinList::check: last ungleich Listenende", FALSE);
-	return;
+    error("LinList::check: last ungleich Listenende", FALSE);
+    return;
     }
 
     if (myanz != anz)
     {
-	sprintf(buffer, "LinList::check: anz (%d != %d) passt nicht", myanz, anz);
-	error(buffer, FALSE);
+    sprintf(buffer, "LinList::check: anz (%d != %d) passt nicht", myanz, anz);
+    error(buffer, FALSE);
     }
 }
 
@@ -485,45 +485,45 @@ void SortedLinList::insert(Linkable *f)
     // Liste leer?
     if (first == NULL)
     {
-	first = sd;
-	last = sd;
-	anz = 1;
-	sd->next = sd->prev = NULL;
+    first = sd;
+    last = sd;
+    anz = 1;
+    sd->next = sd->prev = NULL;
 
-	return;
+    return;
     }
 
     // Einfuegestelle bestimmen
     if (increasing)
 //modified by yufei tao april 2004
-//	for (akt = first; akt != NULL && (akt->d->son) < f->son;
-	for (akt = first; akt != NULL && (akt->d->bounces[0]) < f->bounces[0];
-				 akt = akt->next)
-	    ;
+//    for (akt = first; akt != NULL && (akt->d->son) < f->son;
+    for (akt = first; akt != NULL && (akt->d->bounces[0]) < f->bounces[0];
+                 akt = akt->next)
+        ;
     else
-//	for (akt = first; akt != NULL && akt->d->son > f->son; akt = akt->next)
-	for (akt = first; akt != NULL && akt->d->bounces[0] > f->bounces[0]; akt = akt->next)
-	    ;
+//    for (akt = first; akt != NULL && akt->d->son > f->son; akt = akt->next)
+    for (akt = first; akt != NULL && akt->d->bounces[0] > f->bounces[0]; akt = akt->next)
+        ;
 
     // neues Element muss vor akt eingefuegt werden --> Zeiger umbiegen
     if (akt != NULL)
     {
-	if (akt == first)
-	    first = sd;
-	else
-	    (akt->prev)->next = sd;
-	sd->next = akt;
-	sd->prev = akt->prev;
-	akt->prev = sd;
+    if (akt == first)
+        first = sd;
+    else
+        (akt->prev)->next = sd;
+    sd->next = akt;
+    sd->prev = akt->prev;
+    akt->prev = sd;
     }
     else
     // neues Element muss als letztes Element eingefuegt werden -->
     // Zeiger umbiegen
     {
-	sd->prev = last;
-	sd->next = NULL;
-	last->next = sd;
-	last = sd;
+    sd->prev = last;
+    sd->next = NULL;
+    last->next = sd;
+    last = sd;
     }
 
     // Gesamtanzahl erhoehen
@@ -545,39 +545,39 @@ void SortedLinList::sort(bool _increasing)
     any = TRUE;
     while (any)
     {
-	any = FALSE;
-	old_akt = NULL;
-	for (akt = first; akt != NULL; akt = akt->next)
-	{
-	    // beim ersten Element gibts nichts zu vergleichen
-	    if (old_akt != NULL)
-	    {
-		swap = FALSE;
-		if (_increasing)
-		{
-		    if ((akt->d->son) > (old_akt->d->son))
-			swap = TRUE;
-		}
-		else
-		{
-		    if ((akt->d->son) < (old_akt->d->son))
-			swap = TRUE;
-		}
+    any = FALSE;
+    old_akt = NULL;
+    for (akt = first; akt != NULL; akt = akt->next)
+    {
+        // beim ersten Element gibts nichts zu vergleichen
+        if (old_akt != NULL)
+        {
+        swap = FALSE;
+        if (_increasing)
+        {
+            if ((akt->d->son) > (old_akt->d->son))
+            swap = TRUE;
+        }
+        else
+        {
+            if ((akt->d->son) < (old_akt->d->son))
+            swap = TRUE;
+        }
 
-		if (swap)
-		{
-		    // es muessen nur die Datenpointer umgehaengt werden !
-		    s = akt->d;
-		    akt->d = old_akt->d;
-		    old_akt->d = s;
+        if (swap)
+        {
+            // es muessen nur die Datenpointer umgehaengt werden !
+            s = akt->d;
+            akt->d = old_akt->d;
+            old_akt->d = s;
 
-		    // in diesem Durchlauf hat sich was getan -->
-		    // neuer Durchlauf
-		    any = TRUE;
-		}
-	    }
-	    old_akt = akt;
-	}
+            // in diesem Durchlauf hat sich was getan -->
+            // neuer Durchlauf
+            any = TRUE;
+        }
+        }
+        old_akt = akt;
+    }
     }
 
     akt_index = -1;

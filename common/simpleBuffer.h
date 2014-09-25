@@ -17,22 +17,22 @@ using namespace std;
 
 class Page{
 public:
-	long pageID;
-	long key; // lower key is better (key=-priority)
+    long pageID;
+    long key; // lower key is better (key=-priority)
 
-	Page();
+    Page();
 
-	void setPage(long pageID, long priority);  // higher priority is better
+    void setPage(long pageID, long priority);  // higher priority is better
 
-	bool operator==(const Page &p);
+    bool operator==(const Page &p);
 
-	bool operator<(const Page &p);
+    bool operator<(const Page &p);
 
-	bool operator>(const Page &p);
+    bool operator>(const Page &p);
 
-	bool operator<=(const Page &p);
+    bool operator<=(const Page &p);
 
-	bool operator>=(const Page &p);
+    bool operator>=(const Page &p);
 };
 
 
@@ -43,32 +43,32 @@ int right(int i);
 
 class simpleBuffer{
 public:
-	int currSize; // current number of Buffer entries
-	int bufSize;
-	Page *bf;
+    int currSize; // current number of Buffer entries
+    int bufSize;
+    Page *bf;
 
-	long globalTime;
+    long globalTime;
 
-	long pHits;
-	long pMisses;
+    long pHits;
+    long pMisses;
 
-	long bHits;
-	long bMisses;
+    long bHits;
+    long bMisses;
 
-	simpleBuffer(int bufSize);
+    simpleBuffer(int bufSize);
 
 
-	void shrink(int bufSize);
-	void expand(int bufSize);
+    void shrink(int bufSize);
+    void expand(int bufSize);
 
-	void reset(int bufSize);
+    void reset(int bufSize);
 
-	~simpleBuffer();
+    ~simpleBuffer();
 
-	int find(long pageID);
+    int find(long pageID);
 
-	/// call with priority<0 to get LRU
-	bool isHit(long realPageID, int type, long priority); // higher priority is better; type = {PPAGE, BPAGE}
+    /// call with priority<0 to get LRU
+    bool isHit(long realPageID, int type, long priority); // higher priority is better; type = {PPAGE, BPAGE}
 
 };
 

@@ -5,26 +5,26 @@ class RTree;
 
 struct Linkable{
 public:
-	int son;
-	int dimension;
-	int level;
-	float *bounces;
-	float distanz;
-	
-	Linkable() {} // added by Greg
-	Linkable(int dim){ 
-		dimension = dim;
-		bounces = new float[2 * dim];
+    int son;
+    int dimension;
+    int level;
+    float *bounces;
+    float distanz;
+    
+    Linkable() {} // added by Greg
+    Linkable(int dim){ 
+        dimension = dim;
+        bounces = new float[2 * dim];
     }
-	Linkable(int dim, float *_bounces){ 
-		dimension = dim;
-		bounces = new float[2*dim];
-		memcpy(bounces, _bounces, 2*dim*sizeof(float));
+    Linkable(int dim, float *_bounces){ 
+        dimension = dim;
+        bounces = new float[2*dim];
+        memcpy(bounces, _bounces, 2*dim*sizeof(float));
     }
 
-	~Linkable(){ 
-		delete [] bounces;
-	}
+    ~Linkable(){ 
+        delete [] bounces;
+    }
 };
 
 struct SLink{
@@ -56,7 +56,7 @@ public:
     void insert_behind(Linkable *f);       
     void move_front();      
     bool erase();               
-	Linkable * remove();		
+    Linkable * remove();        
 
     Linkable * get(int i);          
     Linkable * get_first();         

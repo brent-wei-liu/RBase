@@ -8,16 +8,16 @@ using namespace std;
 
 class Timing
 {
-	unsigned long secs, usecs;
-	struct timeval tt;
-	clock_t start;
+    unsigned long secs, usecs;
+    struct timeval tt;
+    clock_t start;
 public:
-	Timing();
-	virtual ~Timing();
+    Timing();
+    virtual ~Timing();
 
-	void startClock();
-	unsigned long elapsed();
-	unsigned long stopClock();
+    void startClock();
+    unsigned long elapsed();
+    unsigned long stopClock();
 };
 
 #endif /*TIMING_H_*/

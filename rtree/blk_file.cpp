@@ -26,18 +26,18 @@ BlockFile::BlockFile(const char* name,int b_length){
       number = fread_number();
    }
    else{
-	   if (blocklength < BFHEAD_LENGTH)
-    	 error("BlockFile::BlockFile: Blocks zu kurz\n",TRUE);
+       if (blocklength < BFHEAD_LENGTH)
+         error("BlockFile::BlockFile: Blocks zu kurz\n",TRUE);
 
       fp=fopen(filename,"wb+");
       if (fp == NULL)
-		 error("BlockFile::new_file: Schreibfehler",TRUE);
+         error("BlockFile::new_file: Schreibfehler",TRUE);
 
       new_flag = TRUE;
       fwrite_number(blocklength);
       fwrite_number(0);       //write # of blocks in the file
 
-	  buffer = new char[(l=blocklength-(int)ftell(fp))];
+      buffer = new char[(l=blocklength-(int)ftell(fp))];
       memset(buffer, 0, sizeof(buffer));
       put_bytes(buffer,l);    //fill in the rest of block with 0
 
@@ -45,7 +45,7 @@ BlockFile::BlockFile(const char* name,int b_length){
    }
 
    fseek(fp,0,SEEK_SET);
-   act_block=0;			
+   act_block=0;            
 }
 
 BlockFile::~BlockFile(){
@@ -81,8 +81,8 @@ bool BlockFile::read_block(Block b,int pos){
    if (pos<=number && pos>0)
        seek_block(pos);
    else{
-	   printf("Requested block %d is illegal.", pos - 1); 
-	   error("\n", true);
+       printf("Requested block %d is illegal.", pos - 1); 
+       error("\n", true);
    }
 
    get_bytes(b,blocklength);
@@ -102,7 +102,7 @@ bool BlockFile::write_block(Block block, int pos){
    if (pos<=number && pos>0)
        seek_block(pos);
    else{
-	   printf("Requested block %d is illegal.", pos - 1);  error("\n", true);
+       printf("Requested block %d is illegal.", pos - 1);  error("\n", true);
    }
    put_bytes(block,blocklength);
    if (pos+1>number){
@@ -145,35 +145,35 @@ int CachedBlockFile::next()
 
    if (cachesize == 0) return -1;
    else{
-	   if (fuf_cont[ptr] == free){   //ptr points to a cache page
-		   ret_val = ptr++;   ptr = ptr % cachesize;
-		   return ret_val;
-	   }
-	   else{
-		 tmp= (ptr + 1) % cachesize;
+       if (fuf_cont[ptr] == free){   //ptr points to a cache page
+           ret_val = ptr++;   ptr = ptr % cachesize;
+           return ret_val;
+       }
+       else{
+         tmp= (ptr + 1) % cachesize;
 
-		 while (tmp != ptr && fuf_cont[tmp] != free)
-		    tmp = (tmp + 1) % cachesize;
+         while (tmp != ptr && fuf_cont[tmp] != free)
+            tmp = (tmp + 1) % cachesize;
 
-		 if (ptr == tmp){	
+         if (ptr == tmp){    
              int lru_index = 0; // the index of the victim page
              
-			 for (int i = 1; i < cachesize; i++)
+             for (int i = 1; i < cachesize; i++)
                 if (LRU_indicator[i] > LRU_indicator[lru_index])
                     lru_index=i;        /*the replacement policy is least recently used.  pick
-										out the page with the maximum ilde time counter*/
+                                        out the page with the maximum ilde time counter*/
              ptr = lru_index;
 
-			 if (dirty_indicator [ptr] == true)
-    			BlockFile::write_block(cache[ptr],cache_cont[ptr]-1);
+             if (dirty_indicator [ptr] == true)
+                BlockFile::write_block(cache[ptr],cache_cont[ptr]-1);
 
-    		 fuf_cont[ptr] = free;  dirty_indicator [ptr] = false;
-    		 ret_val = ptr++;  ptr = ptr % cachesize;
-    	 }
-    	 else  //a free block is found
-		    return tmp;
-	   }
-	 }
+             fuf_cont[ptr] = free;  dirty_indicator [ptr] = false;
+             ret_val = ptr++;  ptr = ptr % cachesize;
+         }
+         else  //a free block is found
+            return tmp;
+       }
+     }
 
      return false;
 }
@@ -183,203 +183,203 @@ int CachedBlockFile::in_cache(int index){
    int ret_val = -1;
 
    for (i = 0; i < cachesize; i++)
-	   if (cache_cont[i] == index && fuf_cont[i] != free){
-	       LRU_indicator[i]=0;
-		   ret_val = i;
-	   }
-	   else if (fuf_cont[i] != free)
+       if (cache_cont[i] == index && fuf_cont[i] != free){
+           LRU_indicator[i]=0;
+           ret_val = i;
+       }
+       else if (fuf_cont[i] != free)
                 LRU_indicator[i]++; // increase indicator for this block
    return ret_val;
 }
 
 CachedBlockFile::CachedBlockFile(char* name,int blength, int csize) : BlockFile(name,blength){
-	printf("CachedBlockFile Version 1.0\n");
-	int i;
-	ptr=0;
+    printf("CachedBlockFile Version 1.0\n");
+    int i;
+    ptr=0;
 
-	if (csize>=0) cachesize=csize;
-	else error("Cache size cannot be negative",TRUE);
+    if (csize>=0) cachesize=csize;
+    else error("Cache size cannot be negative",TRUE);
 
-	cache_cont = new int[cachesize];
-	fuf_cont = new uses[cachesize];
-	LRU_indicator = new int[cachesize];
-	dirty_indicator = new bool[cachesize];
+    cache_cont = new int[cachesize];
+    fuf_cont = new uses[cachesize];
+    LRU_indicator = new int[cachesize];
+    dirty_indicator = new bool[cachesize];
 
-	for (i=0; i<cachesize; i++){
-		cache_cont[i] = 0;  
-		fuf_cont[i]=free;
-		LRU_indicator[i] = 0;
-		dirty_indicator[i] = false;
-	}
+    for (i=0; i<cachesize; i++){
+        cache_cont[i] = 0;  
+        fuf_cont[i]=free;
+        LRU_indicator[i] = 0;
+        dirty_indicator[i] = false;
+    }
 
-	cache = new char*[cachesize];
-	for (i = 0; i < cachesize; i++)
-		cache[i] = new char[blength];
+    cache = new char*[cachesize];
+    for (i = 0; i < cachesize; i++)
+        cache[i] = new char[blength];
 
-	page_faults = 0;
+    page_faults = 0;
 }
 
 CachedBlockFile::~CachedBlockFile(){
-	flush();
-	delete[] cache_cont;
-	delete[] fuf_cont;
-	delete[] LRU_indicator;
-	delete[] dirty_indicator;
+    flush();
+    delete[] cache_cont;
+    delete[] fuf_cont;
+    delete[] LRU_indicator;
+    delete[] dirty_indicator;
 
-	for (int i=0;i<cachesize;i++)
-		delete[] cache[i];
+    for (int i=0;i<cachesize;i++)
+        delete[] cache[i];
 
-	delete[] cache;
+    delete[] cache;
 }
 
 bool CachedBlockFile::read_block(Block block, int index){
-	int c_ind;
+    int c_ind;
 
-	index++;
+    index++;
 
-	if(index <= get_num_of_blocks() && index>0){
-		if((c_ind = in_cache(index)) >= 0)
-			memcpy(block, cache[c_ind], get_blocklength());
-		else{     
-			page_faults ++;
-			c_ind = next();
-			if (c_ind >= 0){
-				BlockFile::
-					read_block(cache[c_ind], index - 1); // ext. Num.
-				cache_cont[c_ind] = index;
-				fuf_cont[c_ind] = used;
-				LRU_indicator[c_ind] = 0;
-				memcpy(block, cache[c_ind], get_blocklength());
-			}
-			else //this happens when (i)cache size=0 (ii)all the blocks are pinned
-				BlockFile::read_block(block, index - 1); // read-through (ext.Num.) without caching
-		}
-		return TRUE;
-	}
-	else{
-		printf("The requested block %d is illegal", index - 1);  error("\n", true);
-		return FALSE; 
-	}
+    if(index <= get_num_of_blocks() && index>0){
+        if((c_ind = in_cache(index)) >= 0)
+            memcpy(block, cache[c_ind], get_blocklength());
+        else{     
+            page_faults ++;
+            c_ind = next();
+            if (c_ind >= 0){
+                BlockFile::
+                    read_block(cache[c_ind], index - 1); // ext. Num.
+                cache_cont[c_ind] = index;
+                fuf_cont[c_ind] = used;
+                LRU_indicator[c_ind] = 0;
+                memcpy(block, cache[c_ind], get_blocklength());
+            }
+            else //this happens when (i)cache size=0 (ii)all the blocks are pinned
+                BlockFile::read_block(block, index - 1); // read-through (ext.Num.) without caching
+        }
+        return TRUE;
+    }
+    else{
+        printf("The requested block %d is illegal", index - 1);  error("\n", true);
+        return FALSE; 
+    }
 }
 
 bool CachedBlockFile::write_block(Block block, int index){
-	int c_ind;
+    int c_ind;
 
-	index++;
-	if(index <= get_num_of_blocks() && index > 0){
-		c_ind = in_cache(index);
-		if(c_ind >= 0){
-			memcpy(cache[c_ind], block, get_blocklength());
-			dirty_indicator[c_ind] = true;
-		}
-		else		{
-			c_ind = next();
-			if (c_ind >= 0){
-				memcpy(cache[c_ind], block, get_blocklength());
-				cache_cont[c_ind] = index;
-				fuf_cont[c_ind] = used;
-				LRU_indicator[c_ind] = 0;
-				dirty_indicator[c_ind] = true;
-			}
-			else
-				BlockFile::write_block(block, index - 1);  // write-through (ext.Num.)
-		}
-		return TRUE;
-	}
-	else{
-	   printf("Requested block %d is illegal.", index - 1); error("\n", true);
-	   return FALSE;
-	}
+    index++;
+    if(index <= get_num_of_blocks() && index > 0){
+        c_ind = in_cache(index);
+        if(c_ind >= 0){
+            memcpy(cache[c_ind], block, get_blocklength());
+            dirty_indicator[c_ind] = true;
+        }
+        else        {
+            c_ind = next();
+            if (c_ind >= 0){
+                memcpy(cache[c_ind], block, get_blocklength());
+                cache_cont[c_ind] = index;
+                fuf_cont[c_ind] = used;
+                LRU_indicator[c_ind] = 0;
+                dirty_indicator[c_ind] = true;
+            }
+            else
+                BlockFile::write_block(block, index - 1);  // write-through (ext.Num.)
+        }
+        return TRUE;
+    }
+    else{
+       printf("Requested block %d is illegal.", index - 1); error("\n", true);
+       return FALSE;
+    }
 }
 
 bool CachedBlockFile::fix_block(int index){
-	int c_ind;
+    int c_ind;
 
-	index++;
+    index++;
 
-	if (index <= get_num_of_blocks() && index > 0){
-		if((c_ind = in_cache(index)) >= 0) 	{
-			return TRUE;
-			fuf_cont[c_ind] = fixed;
-		}
-		else
-			return FALSE;
-	}
-	else{
-		printf("Requested block %d is illegal.", index - 1);  
-		error("\n", true);
-    }	
+    if (index <= get_num_of_blocks() && index > 0){
+        if((c_ind = in_cache(index)) >= 0)     {
+            return TRUE;
+            fuf_cont[c_ind] = fixed;
+        }
+        else
+            return FALSE;
+    }
+    else{
+        printf("Requested block %d is illegal.", index - 1);  
+        error("\n", true);
+    }    
 
-	return false;
+    return false;
 }
 
 bool CachedBlockFile::unfix_block(int index){
-	int i;
+    int i;
 
-	i = 0;
-	index++;
-	if(index <= get_num_of_blocks() && index>0){
-		while(i<cachesize && (cache_cont[i]!=index || fuf_cont[i] == free))
-			i++;
-		if (i != cachesize)
-			fuf_cont[i] = used;
+    i = 0;
+    index++;
+    if(index <= get_num_of_blocks() && index>0){
+        while(i<cachesize && (cache_cont[i]!=index || fuf_cont[i] == free))
+            i++;
+        if (i != cachesize)
+            fuf_cont[i] = used;
 
-		return TRUE;
-	}
-	else
-		return FALSE;
+        return TRUE;
+    }
+    else
+        return FALSE;
 }
 
 void CachedBlockFile::unfix_all(){
-	int i;
+    int i;
 
-	for (i = 0; i < cachesize; i++)
-		if (fuf_cont[i] == fixed)
-			fuf_cont[i] = used;
+    for (i = 0; i < cachesize; i++)
+        if (fuf_cont[i] == fixed)
+            fuf_cont[i] = used;
 }
 
 void CachedBlockFile::set_cachesize(int size){
-	int i;
+    int i;
 
-	if (size>=0){
-		ptr = 0;
-		flush();
+    if (size>=0){
+        ptr = 0;
+        flush();
 
-		for(i = 0; i < cachesize; i++)
-			delete[] cache[i];
+        for(i = 0; i < cachesize; i++)
+            delete[] cache[i];
 
-		delete[] cache;
+        delete[] cache;
 
-		delete[] cache_cont;
-		delete[] fuf_cont;
-		delete[] dirty_indicator;
-		delete[] LRU_indicator;
+        delete[] cache_cont;
+        delete[] fuf_cont;
+        delete[] dirty_indicator;
+        delete[] LRU_indicator;
 
-		cachesize = size;
-		cache_cont = new int[cachesize];
-		fuf_cont = new uses[cachesize];
-		LRU_indicator = new int[cachesize];
-		dirty_indicator = new bool[cachesize];
+        cachesize = size;
+        cache_cont = new int[cachesize];
+        fuf_cont = new uses[cachesize];
+        LRU_indicator = new int[cachesize];
+        dirty_indicator = new bool[cachesize];
 
-		for (i=0; i<cachesize; i++){
-			cache_cont[i] = 0;  
-			fuf_cont[i]=free;
-			LRU_indicator[i] = 0;
-			dirty_indicator[i] = false;
-		}
+        for (i=0; i<cachesize; i++){
+            cache_cont[i] = 0;  
+            fuf_cont[i]=free;
+            LRU_indicator[i] = 0;
+            dirty_indicator[i] = false;
+        }
 
-		cache = new char*[cachesize];
-		for (i = 0; i < cachesize; i++)
-			cache[i] = new char[get_blocklength()];
-	}
-	else
-		error("Cache size cannot be negative\n",TRUE);
+        cache = new char*[cachesize];
+        for (i = 0; i < cachesize; i++)
+            cache[i] = new char[get_blocklength()];
+    }
+    else
+        error("Cache size cannot be negative\n",TRUE);
 }
 
 void CachedBlockFile::flush(){
-	int i;
+    int i;
 
-	for (i = 0; i < cachesize; i++)
-		if (fuf_cont[i] != free && dirty_indicator[i])	
-			BlockFile::write_block(cache[i], cache_cont[i] - 1); // ext.Num.
+    for (i = 0; i < cachesize; i++)
+        if (fuf_cont[i] != free && dirty_indicator[i])    
+            BlockFile::write_block(cache[i], cache_cont[i] - 1); // ext.Num.
 }

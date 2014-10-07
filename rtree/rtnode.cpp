@@ -671,17 +671,35 @@ void RTNode::boundedNNSearch(float *QueryPoint, SortedLinList *res,    float *bo
 }
 
 void RTNode::print(){
-    int i;
+    int i,j;
 
-    printf("level %d  Block: %d\n", level, block);
-    
-    for (i = 0; i < num_entries ; i++){
-        printf("(%4.1lf, %4.1lf, %4.1lf, %4.1lf)\n",
-           entries[i].bounces[0],
-           entries[i].bounces[1],
-           entries[i].bounces[2],
-           entries[i].bounces[3]);
+//    printf("level %d  Block: %d\n", level, block);
+    if(level == 0){/*
+        for (i = 0; i < num_entries ; i++){
+            printf("(");
+            for(j=0; j<dimension; j++){
+    //            printf("%4.1lf, ",entries[i].bounces[2*j]);
+                printf("%lf, ",entries[i].bounces[2*j]);
+            }
+            printf(")\n");
+        }*/
+    }else{ 
+        for (i = 0; i < num_entries ; i++){
+            printf("%4.2lf %4.2lf %4.2lf %4.2lf\n",
+               entries[i].bounces[0],
+               entries[i].bounces[2],
+               entries[i].bounces[1] - entries[i].bounces[0],
+               entries[i].bounces[3] - entries[i].bounces[2]);
+        }
     }
+    if (level>0){
+        for (int i=0; i<num_entries; i++){
+            RTNode *child=entries[i].get_son(); 
+            child->print();
+            entries[i].del_son();
+        }
+    }
+
 }
 
 int RTNode::rangeQuery(float *mbr){
@@ -695,17 +713,16 @@ int RTNode::rangeQuery(float *mbr){
         s = entries[i].section(mbr);
         if (s == INSIDE || s == OVERLAP){
             if (level == 0)
-        cnt++;
+                cnt++;
             else{
                 succ = entries[i].get_son();
                 cnt += succ -> rangeQuery(mbr);
-		entries[i].del_son();
+        		entries[i].del_son();
             }
         }
     }
     return cnt;
 }
-
 void RTNode::traverse(float *_skyarray, float *_skydomcnt, int _skyarrayused){
     if (level>0){
         for (int i=0; i<num_entries; i++){
@@ -1015,3 +1032,215 @@ void RTNode::write_to_buffer(char *buffer){
            j += s;
     }
 }
+
+int sort_left_lower(const void *p1, const void *p2){
+    float erg;
+    Entry *e1,*e2;
+    e1 = (Entry *)p1;
+    e2 = (Entry *)p2;
+//    if(d1 == NULL || d2==NULL)
+    erg = e1->bounces[0] - e2->bounces[0];
+    if (erg < 0.0) return -1;
+    else if (erg == 0.0)    return 0;
+    else     return 1;
+}
+
+void RTNode::SortLeftLower()
+{
+
+    printf("Sort Entries\n");
+    // Sort by lower and upper value perpendicular split axis
+    qsort(entries, num_entries, sizeof(Entry), sort_left_lower);
+
+
+}
+void InternalLoop(Entry * t, RTNode *S, int unmarked, vector<Pair> *output, float epsilon)
+{
+    int k = unmarked;
+    float xr,yr,xs,ys;
+    Entry *s = S->entries;
+    while(k < S->num_entries && s[k].bounces[0] <= t->bounces[1] ){
+        printf("Plane Sweep: t(%4.2lf %4.2lf %4.2lf %4.2lf)  S[%d](%4.2lf %4.2lf %4.2lf %4.2lf)",
+             t->bounces[0], t->bounces[1], t->bounces[2], t->bounces[3],
+             k,  s[k].bounces[0], s[k].bounces[1], s[k].bounces[2], s[k].bounces[3]);
+        if(S->level != 0){
+            if(t->bounces[2] < s[k].bounces[3] && t->bounces[3] > s[k].bounces[2]){
+                output->push_back(Pair(t, &s[k]));
+                printf(" OverLap ");
+            }
+        }else{
+            xr = t->bounces[0];
+            yr = t->bounces[2];
+            xs = s[k].bounces[0];
+            ys = s[k].bounces[2];
+
+            if( (xr - xs)*(xr - xs) + (yr - ys)*(yr - ys) < epsilon ){
+                output->push_back(Pair(t, &s[k]));
+                printf(" Output");
+            }
+        }
+        k++;
+        printf("\n");
+    }
+}
+void RTNode::SortedIntersectionTest( RTNode *S, vector<Pair> *output, float epsilon)
+{
+    int i,j;
+    Entry *r, *s;
+    r = entries;
+    s = S->entries;
+    i=0;j=0;
+    while(i<num_entries && j<S->num_entries){
+        if( r[i].bounces[0] < s[j].bounces[0] ){
+            InternalLoop(&r[i], S, j, output, epsilon);
+            i++;
+        }else{
+            InternalLoop(&s[i], this, i, output, epsilon);
+            j++;
+        }
+    }
+
+}
+int RTNode::SpatialJoin3( RTNode *S, float epsilon)
+{
+
+    int i,j,ret;
+    SECTION s;
+    RTNode *RSon, *SSon;
+    vector<Pair> pairs;
+    Entry *e1, *e2;
+    printf("\nSpatial Join1: R {block:%d entries_num: %d level:%d } <-> S {block:%d entries_num:%d level:%d} \n",
+            block,num_entries,level,block,S->num_entries, level);
+
+    this->SortLeftLower();
+    S->SortLeftLower();
+    this->SortedIntersectionTest( S, &pairs , epsilon);
+    for (i=0; i < pairs.size(); i++){
+        e1 = pairs[i].e1;
+        e2 = pairs[i].e2;
+        printf("R(%4.2lf %4.2lf %4.2lf %4.2lf)  S(%4.2lf %4.2lf %4.2lf %4.2lf)",
+            e1->bounces[0],
+            e1->bounces[1],
+            e1->bounces[2],
+            e1->bounces[3],
+            e2->bounces[0],
+            e2->bounces[1],
+            e2->bounces[2],
+            e2->bounces[3]);
+        if(level == 0 && S->level ==0){// R and S are leaf node
+            printf(" OUTPUT\n");
+            /*
+            float xr,yr,xs,ys;
+            xr = e1->bounces[0];
+            yr = e1->bounces[2];
+            xs = e2->bounces[0];
+            ys = e2->bounces[2];
+
+            if( (xr - xs)*(xr - xs) + (yr - ys)*(yr - ys) < 1.0 ){
+                printf(" OUTPUT\n");
+            }else{
+                printf("\n");
+            }
+            */
+        }else if(level == S->level ){
+            printf(" OVERLAP\n");
+            RSon = e1->get_son();
+            SSon = e2->get_son();
+            ret = RSon->SpatialJoin3( SSon ,epsilon);
+            e1->del_son();
+            e2->del_son();
+
+            if(ret != 0){
+                printf("ERROR\n");
+                return -1;
+            }
+            printf("\n\nBack to Spatial Join1: R {block:%d entries_num: %d level:%d } <-> S {block:%d entries_num:%d level:%d} \n",
+                block,num_entries,level,block,S->num_entries, level);
+            printf("i:%d\n",i);
+        }else{
+            printf("  ERROR: level of pair is not Consistent!\n");
+            printf("R entries_num: %d level:%d S entries_num:%d level:%d \n",
+                    num_entries,
+                    level, 
+                    S->num_entries, 
+                    level);
+            return -1;
+
+        }
+    }
+    return 0;
+
+}
+
+
+int RTNode::SpatialJoin1( RTNode *S )
+{
+
+    int i,j,ret;
+    SECTION s;
+    RTNode *RSon, *SSon;
+    printf("\nSpatial Join1: R {block:%d entries_num: %d level:%d } <-> S {block:%d entries_num:%d level:%d} \n",
+            block,num_entries,level,block,S->num_entries, level);
+
+   
+    for (i=0; i < num_entries ; i++){
+        for(j=0; j < S->num_entries; j++){
+                printf("R(%4.2lf %4.2lf %4.2lf %4.2lf)  S(%4.2lf %4.2lf %4.2lf %4.2lf)",
+                    entries[i].bounces[0],
+                    entries[i].bounces[1],
+                    entries[i].bounces[2],
+                    entries[i].bounces[3],
+                    S->entries[j].bounces[0],
+                    S->entries[j].bounces[1],
+                    S->entries[j].bounces[2],
+                    S->entries[j].bounces[3]);
+                if(level == 0 && S->level ==0){// R and S are leaf node
+                    float xr,yr,xs,ys;
+                    xr = entries[i].bounces[0];
+                    yr = entries[i].bounces[2];
+                    xs = S->entries[j].bounces[0];
+                    ys = S->entries[j].bounces[2];
+
+                    if( (xr - xs)*(xr - xs) + (yr - ys)*(yr - ys) < 1.0 ){
+                        printf(" OUTPUT\n");
+                    }else{
+                        printf("\n");
+                    }
+                }else if(level == S->level ){
+                    s = entries[i].section( S->entries[j].bounces );
+                    if(s==INSIDE || s==OVERLAP){
+                        printf(" OVERLAP\n");
+
+                        RSon = entries[i].get_son();
+                        SSon = S->entries[j].get_son();
+                        ret = RSon->SpatialJoin1( SSon );
+                        entries[i].del_son();
+                        entries[j].del_son();
+
+                        if(ret != 0){
+                            printf("ERROR\n");
+                            return -1;
+                        }
+                        printf("\n\nBack to Spatial Join1: R {block:%d entries_num: %d level:%d } <-> S {block:%d entries_num:%d level:%d} \n",
+                            block,num_entries,level,block,S->num_entries, level);
+                        printf("i:%d j:%d\n",i,j);
+                    }else{
+                        printf("\n");
+                    }
+                }else{
+                    printf("  ERROR: level of pair is not Consistent!\n");
+                    printf("R entries_num: %d level:%d S entries_num:%d level:%d \n",
+                            num_entries,
+                            level, 
+                            S->num_entries, 
+                            level);
+                    return -1;
+
+                }
+        }
+    }
+    return 0;
+
+}
+
+

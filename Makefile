@@ -1,4 +1,4 @@
-CXXFLAGS = -O2 -fmessage-length=0
+CXXFLAGS = -O2 -fmessage-length=0 -g
 #CXXFLAGS = -O -g -fmessage-length=0 -fno-inline -Wall
 
 VPATH = .:rtree:common:BBS:BBSdyn

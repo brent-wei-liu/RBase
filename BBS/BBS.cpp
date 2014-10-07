@@ -2,19 +2,27 @@
 
 
 // constructor
-BBS::BBS(float maxValue, string dataset_file_name, int dimension, int data_cardinality, char dataset_type){
+BBS::BBS(float maxValue, string datasetR,string datasetS, int dimension, int data_cardinality, char dataset_type){
     this->maxValue = maxValue;
-    this->dataset_file_name = dataset_file_name;
+    this->dataset_file_R = datasetR;
+    this->dataset_file_S = datasetS;
     this->dimension = dimension;
     this->data_cardinality = data_cardinality;
     this->dataset_type = dataset_type;
 
-    dataFileName = getFileName(dataset_file_name);
-    dataFileNamePath = getDirectory(dataset_file_name);
-    outDirectory = getOutDirectory(dataset_file_name, "BBS");
-    cerr << "dataFileNamePath = " << dataFileNamePath << endl;
-    cerr << "dataFileName = " << dataFileName << endl;
-    cerr << "outDirectory = " << outDirectory << endl;
+    dataRFileName = getFileName(dataset_file_R);
+    dataRFileNamePath = getDirectory(dataset_file_R);
+    outDirectoryR = getOutDirectory(dataset_file_R, "BBS");
+    cerr << "dataRFileNamePath = " << dataRFileNamePath << endl;
+    cerr << "dataRFileName = " << dataRFileName << endl;
+    cerr << "outDirectoryR = " << outDirectoryR << endl;
+
+    dataSFileName = getFileName(dataset_file_S);
+    dataSFileNamePath = getDirectory(dataset_file_S);
+    outDirectoryS = getOutDirectory(dataset_file_S, "BBS");
+    cerr << "dataSFileNamePath = " << dataSFileNamePath << endl;
+    cerr << "dataSFileName = " << dataSFileName << endl;
+    cerr << "outDirectoryS = " << outDirectoryS << endl;
 
     // initialize statistics
     numResults = 0;
@@ -26,62 +34,80 @@ BBS::BBS(float maxValue, string dataset_file_name, int dimension, int data_cardi
 BBS::~BBS(){
 }
 
-void BBS::initialize(){
+void BBS::initialize()
+{
+
 }
+
 
 void BBS::execute(){
 
-    string rtreefilename = outDirectory + ".rtree";
+    string rtrfilename = outDirectoryR + ".rtree";
+    string rtsfilename = outDirectoryS + ".rtree";
 
     totim = new Timing();
     totim->startClock();
 
-    ifstream fin(rtreefilename.c_str(), ios::in);
-    if (fin.fail()){
+    ifstream finr(rtrfilename.c_str(), ios::in);
+    if (finr.fail()){
         cerr << "creating R-tree" << endl;
         Timing *tim = new Timing();
         tim->startClock();
-        RT = new BBS_RTree(this, rtreefilename.c_str(), 4096, NULL, dimension);
-        RT->bulkload(dataset_file_name.c_str(), 15);
+        RTR = new BBS_RTree(this, rtrfilename.c_str(),128, NULL, dimension);
+        RTR->bulkload(dataset_file_R.c_str(), 15);
         int build_time = tim->stopClock();
         delete tim;
         cerr << "build time = " << build_time << endl;
     }
     else{
         cerr << "loading R-tree" << endl;
-        RT = new BBS_RTree(this, rtreefilename.c_str(), NULL);
+        RTR = new BBS_RTree(this, rtrfilename.c_str(), NULL);
     }
-    fin.close();
+    finr.close();
     cerr << "R-tree in memory" << endl;
+    RTR->printTree();
 
+    ifstream fins(rtsfilename.c_str(), ios::in);
+    if (fins.fail()){
+        cerr << "creating R-tree" << endl;
+        Timing *tim = new Timing();
+        tim->startClock();
+        RTS = new BBS_RTree(this, rtsfilename.c_str(),128, NULL, dimension);
+        RTS->bulkload(dataset_file_S.c_str(), 15);
+        int build_time = tim->stopClock();
+        delete tim;
+        cerr << "build time = " << build_time << endl;
+    }
+    else{
+        cerr << "loading R-tree" << endl;
+        RTS = new BBS_RTree(this, rtsfilename.c_str(), NULL);
+    }
+    fins.close();
+    cerr << "R-tree in memory" << endl;
+    RTS->printTree();
 
     // Skyline Query
     Timing *tim = new Timing();
     tim->startClock();
 //    unsigned __int64 temp = pi.cpu_time_ms();
-    skyline();
+//    skyline();
 //    query_time = pi.cpu_time_ms() - temp;
+    float epsilon = 1.0;
+    RTR->RTreeSpatialJoin3( RTS , epsilon);
     query_time = tim->stopClock();
     delete tim;
     cerr << "query done!" << endl;
 
-    numLeafNodes = RT->num_of_dnodes;
-    numInternalNodes = RT->num_of_inodes;
+    numLeafNodes = RTR->num_of_dnodes;
+    numInternalNodes = RTR->num_of_inodes;
 
 //    cerr << "flushing R-tree to disk..." << endl;
-    delete RT;
-
+    delete RTR;
+    delete RTS;
     total_time = totim->stopClock();
     delete totim;
 }
 
-void BBS::skyline(){
-    XxkHeap *hp = new XxkHeap();
-    RT->skyline(hp);
-    numResults = result.size()/(dimension);
-    delete hp;
-//    printResults();
-}
 
 
 string BBS::getStatistics(){

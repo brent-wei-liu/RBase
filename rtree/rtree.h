@@ -2,7 +2,7 @@
 #define __RTREE
 
 #include <list>
-
+#include <string>
 struct hilmbr{
     int block;
     float *bounces;
@@ -24,6 +24,7 @@ public:
     float maxValue; // maximum value (in any dimension) stored in the tree
 
     RTNode *root_ptr;
+    string name;
     bool *re_level;
     LinList *re_data_cands;
     LinList *deletelist;
@@ -39,6 +40,7 @@ public:
     int get_num() { return num_of_data; }
     void insert(Entry *d);
     void load_root();
+    void printTree();
     void NNQuery(float *QueryPoint, SortedLinList *res);
     int rangeQuery(float *mbr);
     void read_header(char *buffer);
@@ -55,7 +57,8 @@ public:
     //bool skyband_dom( int _dim, float *_rslt, int _rsltcnt, float *_pt, int nTopK );
     //void BBS_subspace_band(XxkHeap *_hp, float *_rslt, int &_rsltcnt, bool *_active_dim, int nTopK );
     //void BBS_top_k( XxkHeap *_hp, float *_rslt, int &_rsltcnt, float *_dim_weight, int nTopK );
-
+    void RTreeSpatialJoin1( RTree *S );
+    void RTreeSpatialJoin3( RTree *S ,float epsilon);
 
 };
 #endif // __RTREE

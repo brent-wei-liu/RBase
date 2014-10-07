@@ -8,7 +8,8 @@ int main(int argc, char** argv){
 
     // parameters
     float maxValue;
-    string dataset_file_name;
+    string dataset_file_R;
+    string dataset_file_S;
     string query_file_name;
     int dimension;
     int data_cardinality;
@@ -118,7 +119,8 @@ int main(int argc, char** argv){
 */
     runBBS = true;
     maxValue = 100000;
-    dataset_file_name = "./datasets/cD2T2M100C100000";
+    dataset_file_R = "./datasets/R.txt";
+    dataset_file_S = "./datasets/S.txt";
     dimension = 2;
     data_cardinality = 2;
     dataset_type = 'u';
@@ -149,7 +151,7 @@ int main(int argc, char** argv){
 
     // BBS
     if (runBBS){
-        BBS *bbs = new BBS(maxValue, dataset_file_name, dimension, data_cardinality, dataset_type);
+        BBS *bbs = new BBS(maxValue, dataset_file_R, dataset_file_S, dimension, data_cardinality, dataset_type);
         cerr << "Executing BBS..." << endl;
         bbs->execute();
 //        cerr << "Outputing statistics..." << endl;

@@ -5,6 +5,14 @@ class SortedLinList;
 class Entry;
 class RTree;
 class Heap;
+struct Pair
+{
+    Entry *e1,*e2;
+    Pair( Entry* E1, Entry*E2){
+        e1 = E1;
+        e2 = E2;
+    }
+};
 
 class RTNode{
 public:
@@ -44,7 +52,13 @@ public:
     int countQuery(float *mbr);
     void boundedNNSearch_dynamic(float *QueryPoint, SortedLinList *res, float *bound, float *nearest_distanz, bool *func);
     void traverse(float *_skyarray, float *_skydomcnt, int _skyarrayused);
-    bool main_memory_dom_check(int _k, float *_pt, int &_domcnt); 
+    bool main_memory_dom_check(int _k, float *_pt, int &_domcnt);
+    int SpatialJoin1( RTNode *S );
+    int SpatialJoin3( RTNode *S ,float epsilon);
+    void SortLeftLower();
+    void SortedIntersectionTest( RTNode *S, vector<Pair> *output, float epsilon);
+
+
 };
 
 #endif

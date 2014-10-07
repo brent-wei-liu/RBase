@@ -3,6 +3,7 @@
 
 RTree::RTree(const char *fname, int _b_length, Cache *c, int _dimension){
   //use this constructor to build a new tree
+    name = fname;
     file = new BlockFile(fname, _b_length);
     cache = c;
 
@@ -31,6 +32,7 @@ RTree::RTree(const char *fname, Cache *c)
     file = new BlockFile(fname, 0);
     cache =c;
 
+    name = fname;
     re_data_cands = new LinList();
     deletelist = new LinList();
 
@@ -49,6 +51,7 @@ RTree::RTree(const char *inpname, const char *fname, int _b_length, Cache *c, in
     file = new BlockFile(fname, _b_length);
     cache =c;
 
+    name = fname;
     re_data_cands = new LinList();
     deletelist = new LinList();
 
@@ -447,3 +450,29 @@ void RTree::bulkload(const char *_fname, int _num_bit){
     mbrs.clear();
 }
 
+void RTree::printTree()
+{
+    printf("=============== Print Tree:%s block_len:%d  ===============\n",name.c_str(),file->get_blocklength());
+    load_root();
+    root_ptr->print();
+    printf("=============== Print Tree End =======================\n");
+}
+
+void RTree::RTreeSpatialJoin3( RTree *S ,float epsilon)
+{
+    if( S == NULL){
+        printf("RTree::SpatialJoin3 ERROR!!\n");
+        return ;
+    }
+    this->root_ptr->SpatialJoin3( S->root_ptr, epsilon );
+
+}
+void RTree::RTreeSpatialJoin1( RTree *S )
+{
+    if( S == NULL){
+        printf("RTree::SpatialJoin1 ERROR!!\n");
+        return ;
+    }
+    this->root_ptr->SpatialJoin1( S->root_ptr );
+
+}
